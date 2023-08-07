@@ -18,7 +18,6 @@ use League\CommonMark\Output\RenderedContentInterface;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
 use League\CommonMark\Renderer\DocumentRendererInterface;
 use League\CommonMark\Renderer\NodeRendererInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * @psalm-suppress UnusedClass
@@ -26,7 +25,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final class MarkdownRenderer implements DocumentRendererInterface, ChildNodeRendererInterface
 {
     public function __construct(
-        #[Autowire(service: 'app.commonmark.markdown_renderer_environment')]
         private readonly Environment $environment,
     ) {
     }

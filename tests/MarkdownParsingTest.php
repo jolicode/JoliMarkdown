@@ -6,11 +6,19 @@ namespace JoliMarkdown\Tests;
 
 use JoliMarkdown\MarkdownConverter;
 use JoliMarkdown\MarkdownFixer;
+use JoliMarkdown\MarkdownRendererExtension;
 use JoliMarkdown\Renderer\MarkdownRenderer;
 use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\Attributes\AttributesExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
+use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension;
+use League\CommonMark\Extension\Footnote\FootnoteExtension;
+use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
+use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Parser\MarkdownParser;
 use League\CommonMark\Renderer\HtmlRenderer;
+use League\CommonMark\Util\HtmlFilter;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,17 +35,50 @@ final class MarkdownParsingTest extends TestCase
 
     protected function setUp(): void
     {
-        $environment = new Environment();
-        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment = new Environment([
+            'html_input' => HtmlFilter::ALLOW,
+            'allow_unsafe_links' => true,
+            'max_nesting_level' => 1000,
+            'renderer' => [
+                'block_separator' => "\n",
+                'inner_separator' => " ",
+                'soft_break' => "\n",
+            ],
+        ]);
+        $environment->addExtension(new MarkdownRendererExtension());
+        $environment->addExtension(new FootnoteExtension());
+        $environment->addExtension(new StrikethroughExtension());
+        $environment->addExtension(new DefaultAttributesExtension());
+        $environment->addExtension(new AttributesExtension());
 
         $this->markdownParser = new MarkdownParser($environment);
+        $this->markdownRenderer = new MarkdownRenderer($environment);
+
+        $environment = new Environment([
+            'html_input' => HtmlFilter::ALLOW,
+            'allow_unsafe_links' => true,
+            'max_nesting_level' => 1000,
+            'renderer' => [
+                'block_separator' => "\n",
+                'inner_separator' => "\n",
+                'soft_break' => "\n",
+            ],
+        ]);
+        $environment->addExtension(new FootnoteExtension());
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new TableExtension());
+        $environment->addExtension(new StrikethroughExtension());
+        $environment->addExtension(new ExternalLinkExtension());
+        $environment->addExtension(new DefaultAttributesExtension());
+        $environment->addExtension(new AttributesExtension());
+
         $htmlRenderer = new HtmlRenderer($environment);
         $this->mdConverter = new MarkdownConverter(
             $this->markdownParser,
             $htmlRenderer
         );
+
         $this->markdownFixer = new MarkdownFixer();
-        $this->markdownRenderer = new MarkdownRenderer($environment);
     }
 
     /**
