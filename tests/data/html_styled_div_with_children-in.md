@@ -1,0 +1,1 @@
+<div style="display:flex; margin:1em; align-items: center; margin:auto;"><div><img alt="shadow map" src="/media/original/2018/design-for-3d/planeShadowMap.jpg"></div><div><img alt="environnement map" src="/media/original/2018/design-for-3d/screenEnv.jpg"></div></div>

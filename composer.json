@@ -1,0 +1,23 @@
+{
+    "name": "jolicode/jolimarkdown",
+    "description": "TODO",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "JoliMarkdown\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JoliMarkdown\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.1",
+        "league/commonmark": "^2.4"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^6.2"
+    }
+}
