@@ -2,9 +2,18 @@
 
 namespace JoliMarkdown;
 
+use JoliMarkdown\Fixer\FencedCodeFixer;
+use JoliMarkdown\Fixer\HtmlBlockFixer;
+use JoliMarkdown\Fixer\HtmlInlineFixer;
+use JoliMarkdown\Fixer\ImageFixer;
+use JoliMarkdown\Fixer\LinkFixer;
+use JoliMarkdown\Fixer\TextFixer;
 use League\CommonMark\Node\Block\Document;
 use League\CommonMark\Node\Node;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use League\HTMLToMarkdown\Converter\TableConverter;
+use League\HTMLToMarkdown\HtmlConverter;
+use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class MarkdownFixer
 {
@@ -12,8 +21,17 @@ class MarkdownFixer
 
     public function __construct()
     {
-        $container = new ContainerBuilder();
-        $this->fixers = $container->findTaggedServiceIds('app.markdown.fixer');
+        $htmlConverter = new HtmlConverter();
+        $htmlConverter->getEnvironment()->addConverter(new TableConverter());
+        $logger = new ConsoleLogger(new ConsoleOutput());
+        $this->fixers = [
+            new FencedCodeFixer($logger),
+            new HtmlBlockFixer($logger, $htmlConverter),
+            new HtmlInlineFixer($logger, $htmlConverter),
+            new ImageFixer($logger),
+            new LinkFixer($logger),
+            new TextFixer($logger),
+        ];
     }
 
     public function fix(Document $document): Document

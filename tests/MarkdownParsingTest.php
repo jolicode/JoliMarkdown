@@ -63,6 +63,12 @@ final class MarkdownParsingTest extends TestCase
                 'inner_separator' => "\n",
                 'soft_break' => "\n",
             ],
+            'external_link' => [
+                'internal_hosts' => ['jolicode.com', 'preprod.jolicode.com', 'local.jolicode.com', 'jolicode.ch', 'jolicampus.com'],
+                'nofollow' => 'external',
+                'noopener' => 'external',
+                'noreferrer' => 'external',
+            ],
         ]);
         $environment->addExtension(new FootnoteExtension());
         $environment->addExtension(new CommonMarkCoreExtension());

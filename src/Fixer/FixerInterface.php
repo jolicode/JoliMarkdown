@@ -5,7 +5,6 @@ namespace JoliMarkdown\Fixer;
 use League\CommonMark\Node\Node;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-#[AutoconfigureTag('app.markdown.fixer')]
 interface FixerInterface
 {
     public function getName(): string;
