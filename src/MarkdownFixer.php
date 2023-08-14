@@ -11,6 +11,7 @@ use JoliMarkdown\Fixer\TextFixer;
 use League\CommonMark\Node\Block\Document;
 use League\CommonMark\Node\Node;
 use League\HTMLToMarkdown\Converter\TableConverter;
+use League\HTMLToMarkdown\Environment;
 use League\HTMLToMarkdown\HtmlConverter;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -21,8 +22,10 @@ class MarkdownFixer
 
     public function __construct()
     {
-        $htmlConverter = new HtmlConverter();
-        $htmlConverter->getEnvironment()->addConverter(new TableConverter());
+        $environment = new Environment();
+        $environment->addConverter(new TableConverter());
+        $htmlConverter = new HtmlConverter($environment);
+
         $logger = new ConsoleLogger(new ConsoleOutput());
         $this->fixers = [
             new FencedCodeFixer($logger),
