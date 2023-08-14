@@ -11,6 +11,7 @@ use JoliMarkdown\Renderer\MarkdownRenderer;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Attributes\AttributesExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
 use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
 use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension;
 use League\CommonMark\Extension\Footnote\FootnoteExtension;
@@ -68,6 +69,12 @@ final class MarkdownParsingTest extends TestCase
                 'nofollow' => 'external',
                 'noopener' => 'external',
                 'noreferrer' => 'external',
+            ],
+            'default_attributes' => [
+                Image::class  => [
+                    'loading' => 'lazy',
+                    'decoding' => 'async',
+                ],
             ],
         ]);
         $environment->addExtension(new FootnoteExtension());
