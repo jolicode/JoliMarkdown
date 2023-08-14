@@ -8,56 +8,71 @@ use JoliMarkdown\Fixer\HtmlInlineFixer;
 use JoliMarkdown\Fixer\ImageFixer;
 use JoliMarkdown\Fixer\LinkFixer;
 use JoliMarkdown\Fixer\TextFixer;
-use League\CommonMark\Node\Block\Document;
-use League\CommonMark\Node\Node;
+use JoliMarkdown\Renderer\MarkdownRenderer;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\Attributes\AttributesExtension;
+use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
+use League\CommonMark\Extension\Footnote\FootnoteExtension;
+use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
+use League\CommonMark\Parser\MarkdownParser;
+use League\CommonMark\Util\HtmlFilter;
 use League\HTMLToMarkdown\Converter\TableConverter;
-use League\HTMLToMarkdown\Environment;
+use League\HTMLToMarkdown\Environment as HTMLToMarkdownEnvironment;
 use League\HTMLToMarkdown\HtmlConverter;
-use Symfony\Component\Console\Logger\ConsoleLogger;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class MarkdownFixer
 {
-    private readonly iterable $fixers;
+    private readonly MarkdownParser $markdownParser;
+    private readonly DocumentFixer $documentFixer;
+    private readonly MarkdownRenderer $markdownRenderer;
 
-    public function __construct()
-    {
-        $environment = new Environment();
-        $environment->addConverter(new TableConverter());
-        $htmlConverter = new HtmlConverter($environment);
+    public function __construct(
+        LoggerInterface $logger = null,
+        Environment $environment = null,
+        string $internalDomainsPattern = null,
+    ) {
+        if (null === $environment) {
+            $environment = new Environment([
+                'html_input' => HtmlFilter::ALLOW,
+                'allow_unsafe_links' => true,
+                'max_nesting_level' => 1000,
+                'renderer' => [
+                    'block_separator' => "\n",
+                    'inner_separator' => ' ',
+                    'soft_break' => "\n",
+                ],
+            ]);
+            $environment->addExtension(new MarkdownRendererExtension());
+            $environment->addExtension(new FootnoteExtension());
+            $environment->addExtension(new StrikethroughExtension());
+            $environment->addExtension(new DefaultAttributesExtension());
+            $environment->addExtension(new AttributesExtension());
+        }
 
-        $logger = new ConsoleLogger(new ConsoleOutput());
-        $this->fixers = [
+        $this->markdownParser = new MarkdownParser($environment);
+        $this->markdownRenderer = new MarkdownRenderer($environment);
+
+        $htmlConverterEnvironment = new HTMLToMarkdownEnvironment();
+        $htmlConverterEnvironment->addConverter(new TableConverter());
+        $htmlConverter = new HtmlConverter($htmlConverterEnvironment);
+        $logger ??= new NullLogger();
+        $this->documentFixer = new DocumentFixer([
             new FencedCodeFixer($logger),
             new HtmlBlockFixer($logger, $htmlConverter),
             new HtmlInlineFixer($logger, $htmlConverter),
-            new ImageFixer($logger),
-            new LinkFixer($logger),
+            new ImageFixer($logger, $internalDomainsPattern),
+            new LinkFixer($logger, $internalDomainsPattern),
             new TextFixer($logger),
-        ];
+        ]);
     }
 
-    public function fix(Document $document): Document
+    public function fix(string $inputMarkdown): string
     {
-        foreach ($document->children() as $child) {
-            $this->fixNode($child);
-        }
+        $document = $this->markdownParser->parse($inputMarkdown);
+        $fixedDocument = $this->documentFixer->fix($document);
 
-        return $document;
-    }
-
-    public function fixNode(Node $node, int $indentLevel = 0): void
-    {
-        foreach ($node->children() as $child) {
-            if (null !== $child->parent()) {
-                $this->fixNode($child, $indentLevel + 1);
-            }
-        }
-
-        foreach ($this->fixers as $fixer) {
-            if (null !== $node->parent() && $fixer->supports($node)) {
-                $fixer->fix($node);
-            }
-        }
+        return $this->markdownRenderer->renderDocument($fixedDocument)->getContent();
     }
 }

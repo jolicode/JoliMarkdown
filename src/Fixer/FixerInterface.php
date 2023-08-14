@@ -3,7 +3,6 @@
 namespace JoliMarkdown\Fixer;
 
 use League\CommonMark\Node\Node;
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 interface FixerInterface
 {

@@ -4,9 +4,16 @@ namespace JoliMarkdown\Fixer;
 
 use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Node\Node;
+use Psr\Log\LoggerInterface;
 
 class LinkFixer extends AbstractFixer implements FixerInterface
 {
+    public function __construct(
+        protected readonly LoggerInterface $logger,
+        private readonly ?string $internalDomainsPattern = null,
+    ) {
+    }
+
     public function getName(): string
     {
         return 'Link';
@@ -20,11 +27,13 @@ class LinkFixer extends AbstractFixer implements FixerInterface
     public function fix(Node $node): ?iterable
     {
         if ($node instanceof Link) {
-            $url = preg_replace('#^(https?)?://(www.)?jolicode.com/?#', '', $node->getUrl(), -1, $count);
+            if (null !== $this->internalDomainsPattern) {
+                $url = preg_replace($this->internalDomainsPattern, '', $node->getUrl(), -1, $count);
 
-            if ($count > 0) {
-                // absolute URLs for the site domain are converted to relative URLs
-                $node->setUrl($url);
+                if ($count > 0) {
+                    // absolute URLs for the site domain are converted to relative URLs
+                    $node->setUrl($url);
+                }
             }
 
             if (str_starts_with($node->getUrl(), 'http')) {
