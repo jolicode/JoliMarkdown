@@ -2,7 +2,7 @@
 
 On va 🍕mettre une note ici[^hey], et une 2nde sur la même ligne[^2nde] + emoji heureux : 😄
 
-Et puis on pourrait en mettre une [dans un[^ici] lien](://www.jolicode.com).
+Et puis on pourrait en mettre une [dans un[^ici] lien](://www.internaldomain.com).
 
 [^1]: Le 1 est magnifique
 [^hey]: Ma 2e footnote est trop cool
