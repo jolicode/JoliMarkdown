@@ -55,7 +55,11 @@ function phpstan(): int
 #[AsTask(description: 'Run the phpunit tests')]
 function phpunit(): int
 {
-    return run('tools/phpunit/vendor/bin/simple-phpunit')->getExitCode();
+    $c = get_context()
+        ->withAllowFailure(true)
+    ;
+
+    return run('tools/phpunit/vendor/bin/simple-phpunit', context: $c)->getExitCode();
 }
 
 #[AsTask(description: 'Run the rector upgrade')]
