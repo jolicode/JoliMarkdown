@@ -22,10 +22,10 @@ use League\CommonMark\Renderer\NodeRendererInterface;
 /**
  * @psalm-suppress UnusedClass
  */
-final readonly class MarkdownRenderer implements DocumentRendererInterface, ChildNodeRendererInterface
+final class MarkdownRenderer implements DocumentRendererInterface, ChildNodeRendererInterface
 {
     public function __construct(
-        private Environment $environment,
+        private readonly Environment $environment,
     ) {
     }
 
