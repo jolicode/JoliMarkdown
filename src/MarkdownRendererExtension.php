@@ -31,7 +31,7 @@ use JoliMarkdown\Renderer\Inline\StrongRenderer;
 use JoliMarkdown\Renderer\Inline\TaskListItemMarkerRenderer;
 use JoliMarkdown\Renderer\Inline\TextRenderer;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
-use League\CommonMark\Extension\CommonMark\Delimiter\Processor\EmphasisDelimiterProcessor;
+use League\CommonMark\Extension\Attributes\AttributesExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\BlockQuote;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
@@ -63,11 +63,13 @@ use League\CommonMark\Extension\CommonMark\Parser\Inline\HtmlInlineParser;
 use League\CommonMark\Extension\CommonMark\Parser\Inline\OpenBracketParser;
 use League\CommonMark\Extension\ConfigurableExtensionInterface;
 use League\CommonMark\Extension\ExtensionInterface;
+use League\CommonMark\Extension\Footnote\FootnoteExtension;
 use League\CommonMark\Extension\Footnote\Node\Footnote;
 use League\CommonMark\Extension\Footnote\Node\FootnoteBackref;
 use League\CommonMark\Extension\Footnote\Node\FootnoteContainer;
 use League\CommonMark\Extension\Footnote\Node\FootnoteRef;
 use League\CommonMark\Extension\Strikethrough\Strikethrough;
+use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
 use League\CommonMark\Extension\TaskList\TaskListItemMarker;
 use League\CommonMark\Extension\TaskList\TaskListItemMarkerParser;
 use League\CommonMark\Node\Block\Document;
@@ -92,10 +94,20 @@ final class MarkdownRendererExtension implements ExtensionInterface, Configurabl
             'enable_em' => Expect::bool(true),
             'unordered_list_markers' => Expect::listOf('string')->min(1)->default(['*', '+', '-'])->mergeDefaults(false),
         ]));
+
+        $builder->addSchema('joli_markdown', Expect::structure([
+            'prefer_asterisk_over_underscore' => Expect::bool(true),
+            'unordered_list_marker' => Expect::string('-'),
+            'internal_domains' => Expect::listOf('string')->default([]),
+        ]));
     }
 
     public function register(EnvironmentBuilderInterface $environment): void
     {
+        $environment->addExtension(new AttributesExtension());
+        $environment->addExtension(new FootnoteExtension());
+        $environment->addExtension(new StrikethroughExtension());
+
         $environment->addBlockStartParser(new BlockQuoteStartParser(), 70);
         $environment->addBlockStartParser(new HeadingStartParser(), 60);
         $environment->addBlockStartParser(new FencedCodeStartParser(), 50);
@@ -148,13 +160,5 @@ final class MarkdownRendererExtension implements ExtensionInterface, Configurabl
         // remaining HTML block elements
         $environment->addRenderer(BlockCommonmarkContainer::class, new BlockCommonmarkContainerRenderer());
         $environment->addRenderer(InlineCommonmarkContainer::class, new InlineCommonmarkContainerRenderer());
-
-        if ($environment->getConfiguration()->get('commonmark/use_asterisk')) {
-            $environment->addDelimiterProcessor(new EmphasisDelimiterProcessor('*'));
-        }
-
-        if ($environment->getConfiguration()->get('commonmark/use_underscore')) {
-            $environment->addDelimiterProcessor(new EmphasisDelimiterProcessor('_'));
-        }
     }
 }

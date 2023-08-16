@@ -3,6 +3,8 @@
 ## Usage
 
 ```php
+use JoliMarkdown\MarkdownFixer;
+
 $markdown = <<<MARKDOWN
     # A Markdown document
 
@@ -12,6 +14,36 @@ MARKDOWN;
 $markdownFixer = new MarkdownFixer();
 $fixedMarkdown = $markdownFixer->fix($markdown);
 ```
+
+If you are using Symfony, you may want to read the [documentation for the associated bundle](src/Bridge/Symfony/README.md).
+
+## Configuration
+
+Several configuration options are available as leage commonmark environment configuration options, to customize the behavior of the Markdown fixer:
+
+```php
+use JoliMarkdown\MarkdownFixer;
+
+$markdown = <<<MARKDOWN
+    - some
+    - list
+MARKDOWN;
+
+$markdownFixer = new MarkdownFixer(new Environment([
+    'joli_markdown' => [
+        'unordered_list_marker' => '*',
+    ],
+]));
+$fixedMarkdown = $markdownFixer->fix($markdown);
+
+// outputs:
+// - some
+// - list
+```
+
+ * `internal_domains`: an array of domains that are considered internal to the website. Whenever an image or a link URL is found, that sits under one of the listed domains, the URL will be converted to a relative one. Defaults to `[]`.
+ * `prefer_asterisk_over_underscore`: a boolean to indicate whether to prefer `*` over `_` for emphasis. Defaults to `true`.
+ * `unordered_list_marker`: a string to use as the marker for unordered lists. Defaults to `-`.
 
 ## Tests
 
@@ -93,7 +125,7 @@ With the help of this extension, we'd like to be able to write a program which, 
 
 This repository proposes a tool to achieve this goal, using the following overall approach:
 
-- from an existing string (the initial Markdown content of the article), an abstract syntax tree (AST) is generated using the `league/commonmark` Markdown parser. This parser is specifically configured, with few exensions enabled, to be as close as possible to standard CommonMark syntax and to obtain an AST that contains (almost) only the basic syntactic elements of CommonMark ;
+- from an existing string (the initial Markdown content of the article), an abstract syntax tree (AST) is generated using the `league/commonmark` Markdown parser. This parser is specifically configured, with few extensions enabled, to be as close as possible to standard CommonMark syntax and to obtain an AST that contains (almost) only the basic syntactic elements of CommonMark ;
 - the `league/commonmark` parser returns a `Document`, which is a hierarchy of `Nodes` (a `Node` being an element of the AST). Each node is typed (for example, a `Node` of type `Paragraph` represents a paragraph, a `Node` of type `Image` represents an image, etc.), and the HTML code parts are parsed in the form of `HtmlBlock` or `HtmlInline` nodes;
 - this Document is then **corrected** via a set of correction classes. For example:
   - if a Node of type `FencedCode` has a CSS class attribute `language-php`, then this class is removed and instead the Node's `Info` attribute is updated with the value `php` ;

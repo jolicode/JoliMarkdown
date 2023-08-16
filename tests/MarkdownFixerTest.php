@@ -32,11 +32,17 @@ final class MarkdownFixerTest extends TestCase
 
     protected function setUp(): void
     {
-        $internalDomains = [
-            'internaldomain.com',
-            'www.internaldomain.com',
-        ];
-        $this->markdownFixer = new MarkdownFixer(internalDomains: $internalDomains);
+        $fixerEnvironment = new Environment([
+            'joli_markdown' => [
+                'internal_domains' => [
+                    'internaldomain.com',
+                    'www.internaldomain.com',
+                ],
+                'prefer_asterisk_over_underscore' => true,
+                'unordered_list_marker' => '-', // or '*'
+            ],
+        ]);
+        $this->markdownFixer = new MarkdownFixer(environment: $fixerEnvironment);
 
         $environment = new Environment([
             'html_input' => HtmlFilter::ALLOW,

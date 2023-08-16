@@ -31,7 +31,7 @@ final class StrongRenderer implements NodeRendererInterface, ConfigurationAwareI
         Strong::assertInstanceOf($node);
 
         $content = $childRenderer->renderNodes($node->children());
-        $delimiter = $this->config->get('commonmark/use_asterisk') ? '**' : '__';
+        $delimiter = $this->config->get('joli_markdown/prefer_asterisk_over_underscore') ? '**' : '__';
 
         return $this->addAttributes($node, $delimiter . $content . $delimiter);
     }

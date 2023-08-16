@@ -1,8 +1,10 @@
 {
     "name": "jolicode/jolimarkdown",
-    "description": "TODO",
+    "description": "A markdown fixer, for enforcing a consistent style in your markdown files.",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/jolicode/JoliMarkdown",
+    "keywords": ["markdown", "fixer", "style"],
     "autoload": {
         "psr-4": {
             "JoliMarkdown\\": "src/"
@@ -15,8 +17,13 @@
     },
     "require": {
         "php": ">=8.1",
+        "ext-mbstring": "*",
+        "lib-libxml": "*",
         "league/commonmark": "^2.4",
         "league/html-to-markdown": "^5.1",
         "psr/log": "^3.0"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "^6.0"
     }
 }

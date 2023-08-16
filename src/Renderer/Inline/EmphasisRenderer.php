@@ -31,7 +31,7 @@ final class EmphasisRenderer implements NodeRendererInterface, ConfigurationAwar
         Emphasis::assertInstanceOf($node);
 
         $content = $childRenderer->renderNodes($node->children());
-        $delimiter = $this->config->get('commonmark/use_asterisk') ? '*' : '_';
+        $delimiter = $this->config->get('joli_markdown/prefer_asterisk_over_underscore') ? '*' : '_';
 
         return $this->addAttributes($node, $delimiter . $content . $delimiter);
     }
