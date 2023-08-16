@@ -1,7 +1,7 @@
-<pre><code class="language-yaml"># in .symfony/services.yaml
-my_project_elasticsearch:
-    type: elasticsearch:6.5
-    disk: 512
-    configuration:
-        plugins:
-            - analysis-icu</code></pre>
+<pre><code class="language-yaml"># in .example/file.yaml
+some_key:
+    first: demo
+    second: 42
+    third:
+        subkey:
+            - some-value</code></pre>

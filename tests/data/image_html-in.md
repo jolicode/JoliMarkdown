@@ -1,6 +1,6 @@
 Some paragraph
 
-<img src="/build/images/photos/contact.jpg" alt="example" />
+<img src="/image.jpg" alt="example" />
 
 Some other paragraph.
 

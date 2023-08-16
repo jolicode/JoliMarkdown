@@ -1,3 +1,3 @@
-Ceci est une[^tralala] phrase.
+This is a[^somenote] sentence.
 
-[^tralala]: Tralalalalèèère
+[^somenote]: Here a note

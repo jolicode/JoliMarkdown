@@ -1,6 +1,6 @@
 {.twitter-tweet data-lang="en"}
 > {lang="en" dir="ltr"}
-> Text -[#hashtag](https://twitter.com/hashtag/testing?src=hash&ref_src=twsrc%5Etfw) [#other hashtag](https://twitter.com/hashtag/ForumPHP?src=hash&ref_src=twsrc%5Etfw) - some text [@Crell](https://twitter.com/Crell?ref_src=twsrc%5Etfw) [pic.twitter.com/PSef8pzLtu](https://t.co/PSef8pzLtu)
-> — Olivier Mansour (@omansour) [October 26, 2017](https://twitter.com/omansour/status/923486387235680256?ref_src=twsrc%5Etfw)
+> Some text -[#hashtag](https://twitter.com/hashtag/hashtag?src=hash&ref_src=twsrc%5Etfw) [#other-hashtag](https://twitter.com/hashtag/other-hashtag?src=hash&ref_src=twsrc%5Etfw) - some other text [@JoliCode](https://twitter.com/JoliCode?ref_src=twsrc%5Etfw)
+> — John Doe (@johndoe) [October 26, 2042](https://twitter.com/johndoe/status/123456789?ref_src=twsrc%5Etfw)
 
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

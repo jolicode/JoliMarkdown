@@ -1,1 +1,1 @@
-Coucou voici un article qui a une image avec des %20 dans son URL : ![Mon image avec une URL encodée](/images/markdown%20test%20image.jpg)
+Here is an article containing an image with %20 in its URL : ![An image with an encoded URL](/images/markdown%20test%20image.jpg)
