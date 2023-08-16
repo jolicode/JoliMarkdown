@@ -34,7 +34,7 @@ class MarkdownFixer
     public function __construct(
         LoggerInterface $logger = null,
         Environment $environment = null,
-        ?array $internalDomains = null,
+        array $internalDomains = null,
     ) {
         if (null === $environment) {
             $environment = new Environment([
@@ -56,7 +56,7 @@ class MarkdownFixer
 
         $internalDomainsPattern = null;
 
-        if (null !== $internalDomains && 0 !== count($internalDomains)) {
+        if (null !== $internalDomains && 0 !== \count($internalDomains)) {
             $internalDomainsPattern = sprintf(
                 '#^(https?)?://(%s)/?#',
                 implode('|', $internalDomains),
