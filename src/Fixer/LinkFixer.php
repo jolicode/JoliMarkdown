@@ -30,7 +30,7 @@ class LinkFixer extends AbstractFixer implements FixerInterface
             if (null !== $this->internalDomainsPattern) {
                 $url = preg_replace($this->internalDomainsPattern, '', $node->getUrl(), -1, $count);
 
-                if ($count > 0) {
+                if (null !== $url && $count > 0) {
                     // absolute URLs for the site domain are converted to relative URLs
                     $node->setUrl($url);
                 }

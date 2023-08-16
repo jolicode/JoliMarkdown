@@ -30,7 +30,7 @@ class ImageFixer extends AbstractFixer implements FixerInterface
             if (null !== $this->internalDomainsPattern) {
                 $url = preg_replace($this->internalDomainsPattern, '', $node->getUrl(), -1, $count);
 
-                if ($count > 0) {
+                if ($count > 0 && null !== $url) {
                     // absolute URLs for the site domain are converted to relative URLs
                     $node->setUrl($url);
                 }

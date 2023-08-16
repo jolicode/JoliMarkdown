@@ -14,10 +14,18 @@ final class FootnoteRenderer implements NodeRendererInterface
     /**
      * @param Footnote $node
      */
-    public function render(Node $node, ChildNodeRendererInterface $childRenderer): string
+    public function render(Node $node, ChildNodeRendererInterface $childRenderer): ?string
     {
         Footnote::assertInstanceOf($node);
-        $nodes = $node->children()[0]->children();
+        $children = (array) $node->children();
+
+        if (0 === \count($children)) {
+            return null;
+        }
+
+        $nodes = $children[0]->children();
+
+        /* @phpstan-ignore-next-line */
         array_unshift($nodes, array_pop($nodes));
 
         return $childRenderer->renderNodes($nodes);

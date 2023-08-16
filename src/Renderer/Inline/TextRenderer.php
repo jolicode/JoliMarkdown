@@ -22,9 +22,9 @@ final class TextRenderer implements NodeRendererInterface
             return ' ';
         }
 
-        $literal = preg_replace('/(?:^[\s\n]+)/u', ' ', $node->getLiteral());
-        $literal = preg_replace('/(?:[\s\n]+$)/u', ' ', $literal);
+        $literal = (string) preg_replace('/(?:^[\s\n]+)/u', ' ', $node->getLiteral());
+        $literal = (string) preg_replace('/(?:[\s\n]+$)/u', ' ', $literal);
 
-        return ' ' !== $literal ? $literal : '';
+        return ' ' !== $literal && null !== $literal ? $literal : '';
     }
 }

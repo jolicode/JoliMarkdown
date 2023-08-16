@@ -14,13 +14,13 @@ final class DocumentRenderer implements NodeRendererInterface
     /**
      * @param Document $node
      */
-    public function render(Node $node, ChildNodeRendererInterface $childRenderer): string
+    public function render(Node $node, ChildNodeRendererInterface $childRenderer): ?string
     {
         Document::assertInstanceOf($node);
 
         $rendered = $childRenderer->renderNodes($node->children());
-        $rendered = preg_replace("/\n\n\n+/", "\n\n", $rendered);
+        $rendered = (string) preg_replace("/\n\n\n+/", "\n\n", $rendered);
 
-        return preg_replace("/(\n\n+$)/", "\n", $rendered);
+        return (string) preg_replace("/(\n\n+$)/", "\n", $rendered);
     }
 }

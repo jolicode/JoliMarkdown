@@ -28,10 +28,13 @@ class MarkdownFixer
     private readonly DocumentFixer $documentFixer;
     private readonly MarkdownRenderer $markdownRenderer;
 
+    /**
+     * @param array<string>|null $internalDomains
+     */
     public function __construct(
         LoggerInterface $logger = null,
         Environment $environment = null,
-        string $internalDomainsPattern = null,
+        ?array $internalDomains = null,
     ) {
         if (null === $environment) {
             $environment = new Environment([
@@ -49,6 +52,15 @@ class MarkdownFixer
             $environment->addExtension(new StrikethroughExtension());
             $environment->addExtension(new DefaultAttributesExtension());
             $environment->addExtension(new AttributesExtension());
+        }
+
+        $internalDomainsPattern = null;
+
+        if (null !== $internalDomains && 0 !== count($internalDomains)) {
+            $internalDomainsPattern = sprintf(
+                '#^(https?)?://(%s)/?#',
+                implode('|', $internalDomains),
+            );
         }
 
         $this->markdownParser = new MarkdownParser($environment);

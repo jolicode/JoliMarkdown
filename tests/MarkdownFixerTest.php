@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JoliMarkdown\Tests;
 
 use JoliMarkdown\MarkdownFixer;
+use JoliMarkdown\MarkdownRendererExtension;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Attributes\AttributesExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -32,9 +33,11 @@ final class MarkdownFixerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->markdownFixer = new MarkdownFixer(
-            internalDomainsPattern: '#^(https?)?://(www.)?internaldomain.com/?#',
-        );
+        $internalDomains = [
+            'internaldomain.com',
+            'www.internaldomain.com',
+        ];
+        $this->markdownFixer = new MarkdownFixer(internalDomains: $internalDomains);
 
         $environment = new Environment([
             'html_input' => HtmlFilter::ALLOW,

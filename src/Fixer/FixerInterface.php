@@ -10,5 +10,8 @@ interface FixerInterface
 
     public function supports(Node $node): bool;
 
+    /**
+     * @return iterable<Node>|null
+     */
     public function fix(Node $node): ?iterable;
 }

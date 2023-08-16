@@ -2,11 +2,15 @@
 
 namespace JoliMarkdown;
 
+use JoliMarkdown\Fixer\FixerInterface;
 use League\CommonMark\Node\Block\Document;
 use League\CommonMark\Node\Node;
 
 class DocumentFixer
 {
+    /**
+     * @param iterable<FixerInterface> $fixers
+     */
     public function __construct(
         private readonly iterable $fixers,
     ) {

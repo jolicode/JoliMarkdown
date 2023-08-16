@@ -39,7 +39,7 @@ class TextFixer extends AbstractFixer implements FixerInterface
                 '\\\\\\\\',
             ], $node->getLiteral());
 
-            if ($literal !== $node->getLiteral()) {
+            if ($literal !== $node->getLiteral() && null !== $literal) {
                 $node->setLiteral($literal);
             }
 
@@ -53,7 +53,7 @@ class TextFixer extends AbstractFixer implements FixerInterface
     {
         $literal = preg_replace('/^<abbr\s+title=["”]?([^>"”]+)["”]?>(.*)$/u', '<abbr title="$1">$2</abbr>', $node->getLiteral(), -1, $count);
 
-        if ($count > 0 && ($nextNode = $node->next()) && $nextNode instanceof HtmlInline) {
+        if (null !== $literal && $count > 0 && ($nextNode = $node->next()) && $nextNode instanceof HtmlInline) {
             $nextNodeLiteral = trim($nextNode->getLiteral());
 
             if (str_starts_with($nextNodeLiteral, '</abbr>')) {

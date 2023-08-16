@@ -42,6 +42,9 @@ class HtmlInlineFixer extends HtmlBlockFixer
         return new HtmlInline('<!--' . $text . '-->');
     }
 
+    /**
+     * @return iterable<Node>|null
+     */
     private function fixHtmlInline(HtmlInline $node): ?iterable
     {
         if (null === $node->parent()) {
@@ -99,7 +102,10 @@ class HtmlInlineFixer extends HtmlBlockFixer
             nodes: $closingNodes,
             separator: ''
         );
-        $this->applyReplacementNodes($fixedNodes, $nodesReplacements);
+
+        if (null !== $fixedNodes) {
+            $this->applyReplacementNodes($fixedNodes, $nodesReplacements);
+        }
 
         return $fixedNodes;
     }
