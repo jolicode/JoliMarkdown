@@ -37,8 +37,8 @@ $markdownFixer = new MarkdownFixer(new Environment([
 $fixedMarkdown = $markdownFixer->fix($markdown);
 
 // outputs:
-// - some
-// - list
+// * some
+// * list
 ```
 
 - `internal_domains`: an array of domains that are considered internal to the website. Whenever an image or a link URL is found, that sits under one of the listed domains, the URL will be converted to a relative one. Defaults to `[]`.
