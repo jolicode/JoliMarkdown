@@ -41,9 +41,9 @@ $fixedMarkdown = $markdownFixer->fix($markdown);
 // - list
 ```
 
- * `internal_domains`: an array of domains that are considered internal to the website. Whenever an image or a link URL is found, that sits under one of the listed domains, the URL will be converted to a relative one. Defaults to `[]`.
- * `prefer_asterisk_over_underscore`: a boolean to indicate whether to prefer `*` over `_` for emphasis. Defaults to `true`.
- * `unordered_list_marker`: a string to use as the marker for unordered lists. Defaults to `-`.
+- `internal_domains`: an array of domains that are considered internal to the website. Whenever an image or a link URL is found, that sits under one of the listed domains, the URL will be converted to a relative one. Defaults to `[]`.
+- `prefer_asterisk_over_underscore`: a boolean to indicate whether to prefer `*` over `_` for emphasis. Defaults to `true`.
+- `unordered_list_marker`: a string to use as the marker for unordered lists. Defaults to `-`.
 
 ## Tests
 

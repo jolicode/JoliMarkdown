@@ -11,6 +11,7 @@
 
 namespace JoliMarkdown\Bridge\Symfony\DependencyInjection;
 
+use JoliMarkdown\Bridge\Symfony\Validator\MarkdownValidator;
 use JoliMarkdown\MarkdownFixer;
 use League\CommonMark\Environment\Environment;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -36,8 +37,13 @@ class JoliMarkdownExtension extends Extension
             'joli_markdown' => $config,
         ]);
 
-        $definition = new Definition(MarkdownFixer::class);
-        $definition->setArgument('$environment', $environmentDefinition);
-        $container->setDefinition('joli_markdown.fixer', $definition);
+        $fixerDefinition = new Definition(MarkdownFixer::class);
+        $fixerDefinition->setArgument('$environment', $environmentDefinition);
+        $container->setDefinition('joli_markdown.fixer', $fixerDefinition);
+
+        $validatorDefinition = new Definition(MarkdownValidator::class);
+        $validatorDefinition->addTag('validator.constraint_validator');
+        $validatorDefinition->setAutowired(true);
+        $container->setDefinition('joli_markdown.validator', $validatorDefinition);
     }
 }

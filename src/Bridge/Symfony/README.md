@@ -37,3 +37,20 @@ $fixedMarkdown = $fixer->fix($markdown);
 ```
 
 If you need dynamic configuration capabilities for the fixer, rather use the lower level library.
+
+### Markdown validator
+
+A markdown validator is available:
+
+```php
+<?php
+// src/Entity/Article.php
+
+use JoliMarkdown\Bridge\Symfony\Validator\Markdown;
+
+class Article
+{
+    #[Markdown()]
+    public string $markdownBody;
+}
+```
