@@ -41,6 +41,7 @@ use JoliMarkdown\Renderer\Inline\TaskListItemMarkerRenderer;
 use JoliMarkdown\Renderer\Inline\TextRenderer;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\Attributes\AttributesExtension;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\BlockQuote;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
@@ -114,6 +115,7 @@ final class MarkdownRendererExtension implements ExtensionInterface, Configurabl
     public function register(EnvironmentBuilderInterface $environment): void
     {
         $environment->addExtension(new AttributesExtension());
+        $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addExtension(new FootnoteExtension());
         $environment->addExtension(new StrikethroughExtension());
 
