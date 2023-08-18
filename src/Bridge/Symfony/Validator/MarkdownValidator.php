@@ -12,7 +12,6 @@
 namespace JoliMarkdown\Bridge\Symfony\Validator;
 
 use JoliMarkdown\MarkdownFixer;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -20,7 +19,6 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class MarkdownValidator extends ConstraintValidator
 {
     public function __construct(
-        #[Autowire(service: 'joli_markdown.fixer')]
         private readonly MarkdownFixer $markdownFixer,
     ) {
     }

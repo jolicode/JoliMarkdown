@@ -11,39 +11,39 @@
 
 namespace JoliMarkdown\Bridge\Symfony\DependencyInjection;
 
-use JoliMarkdown\Bridge\Symfony\Validator\MarkdownValidator;
-use JoliMarkdown\MarkdownFixer;
-use League\CommonMark\Environment\Environment;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class JoliMarkdownExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
+        $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__) . '/Resources/config'));
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $this->createFixerDefinition($container, $config);
+        $this->registerJoliMarkdowConfiguration($config, $container, $loader);
     }
 
     /**
      * @param array<mixed, mixed> $config
      */
-    private function createFixerDefinition(ContainerBuilder $container, array $config): void
+    private function registerJoliMarkdowConfiguration(array $config, ContainerBuilder $container, PhpFileLoader $loader): void
     {
-        $environmentDefinition = new Definition(Environment::class);
-        $environmentDefinition->addArgument([
+        $loader->load('joli_markdown.php');
+
+        $environmentDefinition = $container->getDefinition('joli_markdown.environment');
+        $environmentDefinition->replaceArgument(0, [
             'joli_markdown' => $config,
         ]);
 
-        $fixerDefinition = new Definition(MarkdownFixer::class);
-        $fixerDefinition->setArgument('$environment', $environmentDefinition);
-        $container->setDefinition('joli_markdown.fixer', $fixerDefinition);
+        $fixerDefinition = $container->getDefinition('joli_markdown.fixer');
+        $fixerDefinition->replaceArgument(0, new Reference('logger'));
+        $fixerDefinition->replaceArgument(1, $environmentDefinition);
 
-        $validatorDefinition = new Definition(MarkdownValidator::class);
-        $validatorDefinition->addTag('validator.constraint_validator');
-        $validatorDefinition->setAutowired(true);
-        $container->setDefinition('joli_markdown.validator', $validatorDefinition);
+        $validatorDefinition = $container->getDefinition('joli_markdown.validator');
+        $validatorDefinition->replaceArgument(0, $fixerDefinition);
     }
 }
