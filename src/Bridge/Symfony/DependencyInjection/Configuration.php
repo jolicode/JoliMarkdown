@@ -24,7 +24,6 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->booleanNode('prefer_asterisk_over_underscore')
                     ->defaultTrue()
-                    ->cannotBeEmpty()
                 ->end()
                 ->scalarNode('unordered_list_marker')
                     ->defaultValue('-')
