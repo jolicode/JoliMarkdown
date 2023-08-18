@@ -7,6 +7,7 @@ This bundle integrates [the JoliMarkdown library](https://github.com/jolicode/Jo
 Register the bundle `JoliMarkdown\Bridge\Symfony\JoliMarkdownBundle` in your kernel:
 
 ```php
+// config/bundles.php
   new JoliMarkdown\Bridge\Symfony\JoliMarkdownBundle(),
 ```
 
@@ -27,13 +28,21 @@ You may use it as you wish:
 
 ```php
 $markdown = <<<MARKDOWN
-    # A Markdown document
+    # A sample Markdown document
 
-    Some paragraph here
+    Some paragraph here with an image <img src="/image.png" alt="description" /> inside.
 MARKDOWN;
 
 $fixer = $container->get('joli_markdown.fixer');
 $fixedMarkdown = $fixer->fix($markdown);
+```
+
+The code above will return a "markdownized" version of the input string:
+
+```md
+# A sample Markdown document
+
+Some paragraph here with an image[description](/image.png) inside.
 ```
 
 If you need dynamic configuration capabilities for the fixer, rather use the lower level library.

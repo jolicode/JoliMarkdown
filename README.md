@@ -6,13 +6,21 @@
 use JoliMarkdown\MarkdownFixer;
 
 $markdown = <<<MARKDOWN
-    # A Markdown document
+    # A sample Markdown document
 
-    Some paragraph here
+    Some paragraph here with an image <img src="/image.png" alt="description" /> inside.
 MARKDOWN;
 
 $markdownFixer = new MarkdownFixer();
 $fixedMarkdown = $markdownFixer->fix($markdown);
+```
+
+The code above will return a "markdownized" version of the input string:
+
+```md
+# A sample Markdown document
+
+Some paragraph here with an image[description](/image.png) inside.
 ```
 
 If you are using Symfony, you may want to read the [documentation for the associated bundle](src/Bridge/Symfony/README.md).
@@ -23,6 +31,7 @@ Several configuration options are available as leage commonmark environment conf
 
 ```php
 use JoliMarkdown\MarkdownFixer;
+use League\CommonMark\Environment\Environment;
 
 $markdown = <<<MARKDOWN
     - some
