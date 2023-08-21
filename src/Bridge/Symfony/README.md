@@ -42,7 +42,7 @@ The code above will return a "markdownized" version of the input string:
 ```md
 # A sample Markdown document
 
-Some paragraph here with an image[description](/image.png) inside.
+Some paragraph here with an image [description](/image.png) inside.
 ```
 
 If you need dynamic configuration capabilities for the fixer, rather use the lower level library.
