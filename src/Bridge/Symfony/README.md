@@ -45,7 +45,7 @@ class HelloController
         $fixedMarkdown = $fixer->fix($markdown);
         // # A sample Markdown document
 
-        // Some paragraph here with an image [description](/image.png) inside.
+        // Some paragraph here with an image ![description](/image.png) inside.
     }
 }
 ```
