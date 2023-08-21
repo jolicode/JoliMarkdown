@@ -147,7 +147,7 @@ This repository proposes a tool to achieve this goal, using the following overal
     - as a last resort, if at a given level of recursion we are unable to reconstitute a Markdown Node :
       - we use the `league/html-to-markdown` library to try and convert HTML into Markdown. This step is necessary to transform HTML elements into Markdown that are not supported by the correction classes we've implemented (for example, HTML tables: we don't offer a "Fixer" for the DOM element `<table>`).
       - the resulting string is returned as a new `HTMLBlock` or `HTMLInline` node, depending on the type of first-level node;
-- finally, as a last step, the new `Document` thus corrected is "rendered" as a string, which is the corrected Markdown content of the original article. For this purpose, a set of Renderer classes have been written, heavily inspired by the [wnx/commonmark-markdown-renderer] library (https://github.com/stefanzweifel/commonmark-markdown-renderer).
+- finally, as a last step, the new `Document` thus corrected is "rendered" as a string, which is the corrected Markdown content of the original article. For this purpose, a set of Renderer classes have been written, heavily inspired by the [wnx/commonmark-markdown-renderer library](https://github.com/stefanzweifel/commonmark-markdown-renderer).
 
 ## License
 
