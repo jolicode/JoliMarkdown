@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of JoliCode's "markdown fixer" project.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliMarkdown\Fixer;
 
 use JoliMarkdown\Node\Inline\CommonmarkContainer;
@@ -42,6 +51,9 @@ class HtmlInlineFixer extends HtmlBlockFixer
         return new HtmlInline('<!--' . $text . '-->');
     }
 
+    /**
+     * @return iterable<Node>|null
+     */
     private function fixHtmlInline(HtmlInline $node): ?iterable
     {
         if (null === $node->parent()) {
@@ -99,7 +111,10 @@ class HtmlInlineFixer extends HtmlBlockFixer
             nodes: $closingNodes,
             separator: ''
         );
-        $this->applyReplacementNodes($fixedNodes, $nodesReplacements);
+
+        if (null !== $fixedNodes) {
+            $this->applyReplacementNodes($fixedNodes, $nodesReplacements);
+        }
 
         return $fixedNodes;
     }

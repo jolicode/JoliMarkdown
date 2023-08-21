@@ -1,3 +1,3 @@
-Ceci est une[^1] phrase.
+This is a[^1] sentence.
 
-[^1]: Le 1 est magnifique
+[^1]: Some note

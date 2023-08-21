@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of JoliCode's "markdown fixer" project.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliMarkdown\Tests;
 
-use JoliMarkdown\MarkdownConverter;
 use JoliMarkdown\MarkdownFixer;
-use JoliMarkdown\MarkdownRendererExtension;
-use JoliMarkdown\Renderer\MarkdownRenderer;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Attributes\AttributesExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -27,33 +33,25 @@ use PHPUnit\Framework\TestCase;
  *
  * @coversNothing
  */
-final class MarkdownParsingTest extends TestCase
+final class MarkdownFixerTest extends TestCase
 {
-    private $mdConverter;
-    private $markdownParser;
-    private $markdownFixer;
-    private $markdownRenderer;
+    private MarkdownFixer $markdownFixer;
+    private MarkdownParser $docParser;
+    private HtmlRenderer $htmlRenderer;
 
     protected function setUp(): void
     {
-        $environment = new Environment([
-            'html_input' => HtmlFilter::ALLOW,
-            'allow_unsafe_links' => true,
-            'max_nesting_level' => 1000,
-            'renderer' => [
-                'block_separator' => "\n",
-                'inner_separator' => " ",
-                'soft_break' => "\n",
+        $fixerEnvironment = new Environment([
+            'joli_markdown' => [
+                'internal_domains' => [
+                    'internaldomain.com',
+                    'www.internaldomain.com',
+                ],
+                'prefer_asterisk_over_underscore' => true,
+                'unordered_list_marker' => '-', // or '*'
             ],
         ]);
-        $environment->addExtension(new MarkdownRendererExtension());
-        $environment->addExtension(new FootnoteExtension());
-        $environment->addExtension(new StrikethroughExtension());
-        $environment->addExtension(new DefaultAttributesExtension());
-        $environment->addExtension(new AttributesExtension());
-
-        $this->markdownParser = new MarkdownParser($environment);
-        $this->markdownRenderer = new MarkdownRenderer($environment);
+        $this->markdownFixer = new MarkdownFixer(environment: $fixerEnvironment);
 
         $environment = new Environment([
             'html_input' => HtmlFilter::ALLOW,
@@ -65,13 +63,13 @@ final class MarkdownParsingTest extends TestCase
                 'soft_break' => "\n",
             ],
             'external_link' => [
-                'internal_hosts' => ['jolicode.com', 'preprod.jolicode.com', 'local.jolicode.com', 'jolicode.ch', 'jolicampus.com'],
+                'internal_hosts' => ['internaldomain.com'],
                 'nofollow' => 'external',
                 'noopener' => 'external',
                 'noreferrer' => 'external',
             ],
             'default_attributes' => [
-                Image::class  => [
+                Image::class => [
                     'loading' => 'lazy',
                     'decoding' => 'async',
                 ],
@@ -84,14 +82,8 @@ final class MarkdownParsingTest extends TestCase
         $environment->addExtension(new ExternalLinkExtension());
         $environment->addExtension(new DefaultAttributesExtension());
         $environment->addExtension(new AttributesExtension());
-
-        $htmlRenderer = new HtmlRenderer($environment);
-        $this->mdConverter = new MarkdownConverter(
-            $this->markdownParser,
-            $htmlRenderer
-        );
-
-        $this->markdownFixer = new MarkdownFixer();
+        $this->docParser = new MarkdownParser($environment);
+        $this->htmlRenderer = new HtmlRenderer($environment);
     }
 
     /**
@@ -118,7 +110,7 @@ final class MarkdownParsingTest extends TestCase
         $ret = [];
 
         foreach (glob(__DIR__ . '/data/*-in.md') as $markdownFile) {
-            $testName = basename($markdownFile, '-in.md');
+            $testName = basename((string) $markdownFile, '-in.md');
             $inputMarkdown = file_get_contents($markdownFile);
             $expectedMarkdown = file_get_contents(__DIR__ . '/data/' . $testName . '-out.md');
             $expectedhtml = file_get_contents(__DIR__ . '/data/' . $testName . '-out.html');
@@ -131,9 +123,7 @@ final class MarkdownParsingTest extends TestCase
 
     protected function assertFixMarkdown(string $inputMarkdown, string $expectedMarkdown, string $testName): void
     {
-        $document = $this->markdownParser->parse($inputMarkdown);
-        $document = $this->markdownFixer->fix($document);
-        $fixedMarkdown = $this->markdownRenderer->renderDocument($document)->getContent();
+        $fixedMarkdown = $this->markdownFixer->fix($inputMarkdown);
 
         static::assertSame($expectedMarkdown, $fixedMarkdown, sprintf('Unexpected result for "%s" test', $testName));
 
@@ -142,18 +132,17 @@ final class MarkdownParsingTest extends TestCase
 
         while ($i < 3) {
             $previousMarkdown = $lastMarkdown;
-            $document = $this->markdownParser->parse($previousMarkdown);
-            $document = $this->markdownFixer->fix($document);
-            $lastMarkdown = $this->markdownRenderer->renderDocument($document)->getContent();
+            $lastMarkdown = $this->markdownFixer->fix($previousMarkdown);
 
             ++$i;
         }
-        static::assertSame($lastMarkdown, $previousMarkdown, sprintf('Unexpected result for "%s" test', $testName));
+        static::assertSame($lastMarkdown, $previousMarkdown, sprintf('Unexpected multi-pass result for "%s" test', $testName));
     }
 
     protected function assertConvertToHtml(string $markdown, string $expectedHtml, string $testName): void
     {
-        $actualHtml = $this->mdConverter->mdToHtml($markdown);
+        $document = $this->docParser->parse($markdown);
+        $actualHtml = $this->htmlRenderer->renderDocument($document)->getContent();
 
         $failureMessage = sprintf('Unexpected result for "%s" test', $testName);
         $failureMessage .= "\n=== markdown ===============\n" . $markdown;

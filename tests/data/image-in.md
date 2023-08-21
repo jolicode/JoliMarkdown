@@ -1,2 +1,2 @@
-![Image qui commence avec un slash](/build/images/photos/contact.jpg)
-![Image qui commence sans slash](build/images/photos/contact.jpg)
+![Image that starts with a slash](/images/image.jpg)
+![Image that starts without slash](images/image.jpg)

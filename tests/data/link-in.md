@@ -1,4 +1,4 @@
-[An example !](://www.jolicode.com)
+[An example !](://www.internaldomain.com)
 
 <a href="https://example.com/some non encoded url.html">example</a>
 

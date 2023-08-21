@@ -1,10 +1,10 @@
-# Titre de cet article[^1]
+# Title of this article[^1]
 
-On va 🍕mettre une note ici[^hey], et une 2nde sur la même ligne[^2nde] + emoji heureux : 😄
+There will be 🍕a footnote here[^hey], and a 2nd one on the same line[^2nd] + happy emoji : 😄
 
-Et puis on pourrait en mettre une [dans un[^ici] lien](://www.jolicode.com).
+And we could add one more [in a[^here] link](://www.internaldomain.com).
 
-[^1]: Le 1 est magnifique
-[^hey]: Ma 2e footnote est trop cool
-[^2nde]: Coucou
-[^ici]: c'est vraiment superbe
+[^1]: First footnote text
+[^hey]: Second footnote text
+[^2nd]: Third footnote text
+[^here]: Fourth footnote text

@@ -29,4 +29,4 @@ Here goes a paragraph.
 </tbody>
 </table>
 
-The above array should be parsed back to a markdown array, then converted to a HTMl one.
+The above array should be parsed back to a markdown array, then converted to a HTML one.

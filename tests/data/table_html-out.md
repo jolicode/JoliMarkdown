@@ -9,4 +9,4 @@ Here goes a paragraph.
 | col 2 is | centered | $12 |
 | zebra stripes | are neat | $1 |
 
-The above array should be parsed back to a markdown array, then converted to a HTMl one.
+The above array should be parsed back to a markdown array, then converted to a HTML one.

@@ -3,10 +3,10 @@ Hello,
 Here is a &lt;div&gt; tag:
 
 {.foo style="color: red"}
-I like chocolate fries.
+Some paragraph text.
 
 {.bar}
-I like chocolate fries so much.
+Some other paragraph text.
 
 <article class="nested block elements">
 <p>

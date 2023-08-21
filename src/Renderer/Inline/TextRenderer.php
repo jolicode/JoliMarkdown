@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of JoliCode's "markdown fixer" project.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliMarkdown\Renderer\Inline;
 
 use League\CommonMark\Node\Inline\Text;
@@ -22,9 +31,9 @@ final class TextRenderer implements NodeRendererInterface
             return ' ';
         }
 
-        $literal = preg_replace('/(?:^[\s\n]+)/u', ' ', $node->getLiteral());
-        $literal = preg_replace('/(?:[\s\n]+$)/u', ' ', $literal);
+        $literal = (string) preg_replace('/(?:^[\s\n]+)/u', ' ', $node->getLiteral());
+        $literal = (string) preg_replace('/(?:[\s\n]+$)/u', ' ', $literal);
 
-        return ' ' !== $literal ? $literal : '';
+        return ' ' !== $literal && null !== $literal ? $literal : '';
     }
 }

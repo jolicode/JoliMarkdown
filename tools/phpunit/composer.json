@@ -1,0 +1,5 @@
+{
+    "require": {
+        "symfony/phpunit-bridge": "^6.2"
+    }
+}

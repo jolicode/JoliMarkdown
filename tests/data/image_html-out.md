@@ -1,6 +1,6 @@
 Some paragraph
 
-![example](/build/images/photos/contact.jpg)
+![example](/image.jpg)
 
 Some other paragraph.
 

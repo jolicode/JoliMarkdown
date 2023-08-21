@@ -1,10 +1,10 @@
 This is a list:
 
-* First Item <img hello="yolo" src="/media/original/2012/12/dotjs.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" />
+* First Item <img hello="yolo" src="/media/image.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" />
 * Second item
   * Item 2.1
   * Item 2.2
-    * Item 2.2.1 <img hello="yolo" src="/media/original/2012/12/dotjs.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" />
+    * Item 2.2.1 <img hello="yolo" src="/media/image.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" />
   * Item 2.3
 
 Some paragraph
@@ -23,7 +23,7 @@ Some paragraph
 
 * First Item
 
-    <img hello="yolo" src="/media/original/2012/12/dotjs.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" />
+    <img hello="yolo" src="/media/image.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" />
 
 * Second item
 
@@ -32,7 +32,7 @@ Some paragraph
 <ul class="this-is-a-third-list">
   <li>
     <p>First item <code>with code</code> and an image after this</p>
-    <p><img hello="yolo" src="/media/original/2012/12/dotjs.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" /></p>
+    <p><img hello="yolo" src="/media/image.jpg" alt="Some alternate text with multiple words and some Accents : é à ç" class="yolo" style="display: block;" /></p>
   </li>
   <li>Second item of the second list</li>
 </ul>

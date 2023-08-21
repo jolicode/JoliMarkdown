@@ -2,16 +2,35 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of JoliCode's "markdown fixer" project.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliMarkdown\Renderer\Block;
 
 use JoliMarkdown\Renderer\AttributesTrait;
 use League\CommonMark\Extension\CommonMark\Node\Block\ListBlock;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
+use League\CommonMark\Renderer\NodeRendererInterface;
+use League\Config\ConfigurationAwareInterface;
+use League\Config\ConfigurationInterface;
 
-final class ListBlockRenderer implements \League\CommonMark\Renderer\NodeRendererInterface
+final class ListBlockRenderer implements NodeRendererInterface, ConfigurationAwareInterface
 {
     use AttributesTrait;
+
+    private ConfigurationInterface $config;
+
+    public function setConfiguration(ConfigurationInterface $configuration): void
+    {
+        $this->config = $configuration;
+    }
 
     /**
      * @param ListBlock $node
@@ -28,7 +47,10 @@ final class ListBlockRenderer implements \League\CommonMark\Renderer\NodeRendere
             $content = array_map(function (string $item): string {
                 if (preg_match('/^LIST_BULLET_POINT/', $item)) {
                     // this is an item
-                    return '- ' . mb_substr($item, 17);
+                    return sprintf('%s %s',
+                        $this->config->get('joli_markdown/unordered_list_marker'),
+                        mb_substr($item, 17),
+                    );
                 }
 
                 return "  {$item}";

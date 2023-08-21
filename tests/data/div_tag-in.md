@@ -3,11 +3,11 @@ Hello,
 Here is a &lt;div&gt; tag:
 
 <div class="foo" style="color: red">
-    I like chocolate fries.
+    Some paragraph text.
 </div>
 
 {.bar}
-I like chocolate fries so much.
+Some other paragraph text.
 
 
 

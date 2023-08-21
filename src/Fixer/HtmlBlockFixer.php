@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of JoliCode's "markdown fixer" project.
+ *
+ * (c) JoliCode <coucou@jolicode.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace JoliMarkdown\Fixer;
 
 use JoliMarkdown\Node\Block\CommonmarkContainer;
@@ -69,13 +78,15 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                 $newNodes = [$node];
 
                 foreach ($replacements as $key => $replacement) {
-                    foreach ($newNodes as $newNodeKey => $newNode) {
-                        if ($newNode instanceof StringContainerInterface) {
-                            $exploded = explode($key, $newNode->getLiteral());
+                    if ('' !== $key) {
+                        foreach ($newNodes as $newNodeKey => $newNode) {
+                            if ($newNode instanceof StringContainerInterface) {
+                                $exploded = explode($key, $newNode->getLiteral());
 
-                            if (2 === \count($exploded)) {
-                                $className = $newNode::class;
-                                $newNodes = [...\array_slice($newNodes, 0, $newNodeKey), new $className($exploded[0]), $replacement, new $className($exploded[1]), ...\array_slice($newNodes, $newNodeKey + 1)];
+                                if (2 === \count($exploded)) {
+                                    $className = $newNode::class;
+                                    $newNodes = [...\array_slice($newNodes, 0, $newNodeKey), new $className($exploded[0]), $replacement, new $className($exploded[1]), ...\array_slice($newNodes, $newNodeKey + 1)];
+                                }
                             }
                         }
                     }
@@ -101,17 +112,17 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
 
         if ($element instanceof \DOMText) {
             $value = match (true) {
-                $allowLtrim && $allowRtrim => trim($element->nodeValue),
-                $allowLtrim => ltrim($element->nodeValue),
-                $allowRtrim => rtrim($element->nodeValue),
+                $allowLtrim && $allowRtrim => trim((string) $element->nodeValue),
+                $allowLtrim => ltrim((string) $element->nodeValue),
+                $allowRtrim => rtrim((string) $element->nodeValue),
                 default => $element->nodeValue,
             };
 
-            if (' ' !== $value && '' === $this->trimSpaces($value)) {
+            if (' ' !== $value && '' === $this->trimSpaces((string) $value)) {
                 return null;
             }
 
-            return new Text($value);
+            return new Text((string) $value);
         } elseif ($element instanceof \DOMElement) {
             $attributes = $this->getAttributes($element);
 
@@ -119,7 +130,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                 if ($element->childNodes->length > 0) {
                     $firstChild = $element->childNodes->item(0);
 
-                    while (null !== $firstChild && !$firstChild instanceof \DOMElement && !($firstChild instanceof \DOMText && '' !== trim($firstChild->nodeValue))) {
+                    while (null !== $firstChild && !$firstChild instanceof \DOMElement && !($firstChild instanceof \DOMText && '' !== trim((string) $firstChild->nodeValue))) {
                         $firstChild = $firstChild->nextSibling;
                     }
 
@@ -162,13 +173,13 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                             unset($childAttributes['class']);
                         }
 
-                        $node->data['attributes'] = array_merge($attributes, $childAttributes);
-                        $node->setLiteral($this->rtrimSpaces($child->nodeValue));
+                        $node->data['attributes'] = [...$attributes, ...$childAttributes];
+                        $node->setLiteral($this->rtrimSpaces((string) $child->nodeValue));
 
                         break;
                     }
 
-                    if (!$child instanceof \DOMText || '' !== trim($child->nodeValue)) {
+                    if (!$child instanceof \DOMText || '' !== trim((string) $child->nodeValue)) {
                         break;
                     }
                 }
@@ -259,30 +270,37 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                 $node = $this->appendChildElementsAsChildNodes($element, $node, false);
             }
 
-            if (null === $node) {
+            if (null === $node && null !== $element->ownerDocument) {
                 $elementXml = $element->ownerDocument->saveXML($element);
                 $elementHtml = $element->ownerDocument->saveHTML($element);
-                $converted = $this->htmlConverter->convert($elementHtml);
 
-                // search for the tag name
-                preg_match('/^\s*<([^\s>]+).*>/', $converted, $tagNameMatches);
+                if (false !== $elementHtml && false !== $elementXml) {
+                    $converted = $this->htmlConverter->convert($elementHtml);
 
-                // try to let self-closed html tags as-is
-                preg_match('/^<\s*([a-z0-9-]+)(\s[^>]*)?\/>$/', $elementXml, $matches);
+                    // search for the tag name
+                    preg_match('/^\s*<([^\s>]+).*>/', $converted, $tagNameMatches);
 
-                if (isset($matches[1]) && preg_match(sprintf('/^<%s(\s[^>]*)?\>.*<\/%s>$/', $matches[1], $matches[1]), $converted, $subMatches)) {
-                    if (\in_array($matches[1], ['br', 'hr', 'source'])) {
-                        $converted = $elementXml;
-                    } else {
-                        $converted = $elementHtml;
+                    // try to let self-closed html tags as-is
+                    preg_match('/^<\s*([a-z0-9-]+)(\s[^>]*)?\/>$/', $elementXml, $matches);
+
+                    if (isset($matches[1]) && preg_match(sprintf('/^<%s(\s[^>]*)?\>.*<\/%s>$/', $matches[1], $matches[1]), $converted, $subMatches)) {
+                        if (\in_array($matches[1], ['br', 'hr', 'source'])) {
+                            $converted = $elementXml;
+                        } else {
+                            $converted = $elementHtml;
+                        }
                     }
+
+                    if (isset($tagNameMatches[1]) || isset($matches[1]) && preg_match(sprintf('/^<%s(\s.*)?>$/', $matches[1]), $converted, $subMatches)) {
+                        $attributes = [];
+                    }
+                } else {
+                    $converted = $elementXml;
                 }
 
-                if (isset($tagNameMatches[1]) || isset($matches[1]) && preg_match(sprintf('/^<%s(\s.*)?>$/', $matches[1]), $converted, $subMatches)) {
-                    $attributes = [];
+                if (false !== $converted) {
+                    $node = $this->buildCommonMarkContainer($converted, $attributes);
                 }
-
-                $node = $this->buildCommonMarkContainer($converted, $attributes);
             }
         } elseif ($element instanceof \DOMComment) {
             $node = $this->createCommentNode($element->data);
@@ -375,6 +393,9 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
         return array_values($childNodes);
     }
 
+    /**
+     * @param array<string, string|null> $attributes
+     */
     protected function buildCommonMarkContainer(string $literal, array $attributes = []): Node
     {
         $node = new CommonmarkContainer($literal);
@@ -391,7 +412,13 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
         return $node;
     }
 
-    protected function fixAndReplace(string|array $literal, Node|array $nodes, string $separator = "\n"): iterable
+    /**
+     * @param string|array<string> $literal
+     * @param Node|array<Node>     $nodes
+     *
+     * @return iterable<Node>|null
+     */
+    protected function fixAndReplace(string|array $literal, Node|array $nodes, string $separator = "\n"): ?iterable
     {
         if (\is_array($literal)) {
             $literal = implode($separator, $literal);
@@ -434,14 +461,17 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
         if ($fixedNodes instanceof Node) {
             $fixedNodes = $fixedNodes->children();
         }
-        foreach ($fixedNodes as $fixedNode) {
-            if (!$fixedNode instanceof AbstractBlock && HtmlInlineFixer::class !== static::class) {
-                $wrapper = new Paragraph();
-                $wrapper->appendChild($fixedNode);
-                $fixedNode = $wrapper;
-            }
 
-            $nodes[0]->insertBefore($fixedNode);
+        if (null !== $fixedNodes) {
+            foreach ($fixedNodes as $fixedNode) {
+                if (!$fixedNode instanceof AbstractBlock && HtmlInlineFixer::class !== static::class) {
+                    $wrapper = new Paragraph();
+                    $wrapper->appendChild($fixedNode);
+                    $fixedNode = $wrapper;
+                }
+
+                $nodes[0]->insertBefore($fixedNode);
+            }
         }
 
         $this->removeNodes($nodes);
@@ -451,6 +481,10 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
 
     protected function removeNode(Node $node): void
     {
+        if (null === $node->parent()) {
+            return;
+        }
+
         $newChildren = $node->parent()->children();
 
         foreach ($newChildren as $key => $child) {
@@ -459,7 +493,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
             }
         }
 
-        $node->parent()->replaceChildren(array_values($newChildren));
+        $node->parent()->replaceChildren(array_values((array) $newChildren));
     }
 
     /**
@@ -479,10 +513,10 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
     {
         $literal = array_map(function (string $line): string {
             $line = preg_replace('/(?:<\s+)/', '<', $line);
-            $line = preg_replace('/(?:\s+>)/', '>', $line);
-            $line = preg_replace('/(?:\s+\/>)/', '/>', $line);
+            $line = preg_replace('/(?:\s+>)/', '>', (string) $line);
+            $line = preg_replace('/(?:\s+\/>)/', '/>', (string) $line);
 
-            return $line;
+            return (string) $line;
         }, $literal);
 
         $literalString = implode('', $literal);
@@ -497,11 +531,15 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
         }
 
         return
-            $documentElement->ownerDocument->saveXML($documentElement) === '<div>' . $literalString . '</div>'
-            || $documentElement->ownerDocument->saveHTML($documentElement) === '<div>' . $literalString . '</div>'
-        ;
+            null !== $documentElement->ownerDocument && (
+                $documentElement->ownerDocument->saveXML($documentElement) === '<div>' . $literalString . '</div>'
+                || $documentElement->ownerDocument->saveHTML($documentElement) === '<div>' . $literalString . '</div>'
+            );
     }
 
+    /**
+     * @return iterable<Node>|null
+     */
     private function fixHtmlBlock(HtmlBlock $node): ?iterable
     {
         if (null === $node->parent()) {
@@ -559,22 +597,31 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
         }
 
         $fixedNodes = $this->fixAndReplace($literal, $closingNodes);
-        $this->applyReplacementNodes($fixedNodes, $nodesReplacements);
+
+        if (null !== $fixedNodes) {
+            $this->applyReplacementNodes($fixedNodes, $nodesReplacements);
+        }
 
         return $fixedNodes;
     }
 
+    /**
+     * @return array<string, string|null>
+     */
     private function getAttributes(\DOMElement $element): array
     {
         $attributes = [];
 
         foreach ($element->attributes as $name => $attr) {
-            $attributes[$name] = $attr->value;
+            $attributes[(string) $name] = $attr->value;
         }
 
         return $attributes;
     }
 
+    /**
+     * @param array<string, bool|string|null> $attributes
+     */
     private function outputAttributes(array $attributes): string
     {
         $result = '';
@@ -585,7 +632,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
             } elseif (false === $value) {
                 continue;
             } else {
-                $result .= ' ' . $key . '="' . Xml::escape($value) . '"';
+                $result .= ' ' . $key . '="' . Xml::escape((string) $value) . '"';
             }
         }
 
@@ -599,12 +646,12 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
 
     private function ltrimSpaces(string $string): string
     {
-        return preg_replace('/(^\s+)/us', '', $string);
+        return (string) preg_replace('/(^\s+)/us', '', $string);
     }
 
     private function rtrimSpaces(string $string): string
     {
-        return preg_replace('/(\s+$)/us', '', $string);
+        return (string) preg_replace('/(\s+$)/us', '', $string);
     }
 
     private function trimSpaces(string $string): string

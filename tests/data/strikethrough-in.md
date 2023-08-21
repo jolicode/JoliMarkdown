@@ -1,3 +1,3 @@
-~~Texte barré !~~
+~~Strikethrough text!~~
 
-Il y a du ~~texte barré~~ au sein d'un paragraphe
+There is ~~strikethrough text~~ in a paragraph
