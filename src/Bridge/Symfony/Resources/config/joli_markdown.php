@@ -17,14 +17,14 @@ use League\CommonMark\Environment\Environment;
 
 return static function (ContainerConfigurator $container) {
     $container->services()
-        ->set('joli_markdown.fixer', MarkdownFixer::class)
+        ->set(MarkdownFixer::class)
             ->args([
-                abstract_arg('logger'),
-                abstract_arg('environment'),
+                service('joli_markdown.environment'),
+                service('logger')->ignoreOnInvalid(),
             ])
-        ->set('joli_markdown.validator', MarkdownValidator::class)
+        ->set(MarkdownValidator::class)
             ->args([
-                abstract_arg('fixer'),
+                service(MarkdownFixer::class),
             ])
             ->tag('validator.constraint_validator')
         ->set('joli_markdown.environment', Environment::class)

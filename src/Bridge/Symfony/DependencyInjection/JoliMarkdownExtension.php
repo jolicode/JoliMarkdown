@@ -14,7 +14,6 @@ namespace JoliMarkdown\Bridge\Symfony\DependencyInjection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class JoliMarkdownExtension extends Extension
@@ -38,12 +37,5 @@ class JoliMarkdownExtension extends Extension
         $environmentDefinition->replaceArgument(0, [
             'joli_markdown' => $config,
         ]);
-
-        $fixerDefinition = $container->getDefinition('joli_markdown.fixer');
-        $fixerDefinition->replaceArgument(0, new Reference('logger'));
-        $fixerDefinition->replaceArgument(1, $environmentDefinition);
-
-        $validatorDefinition = $container->getDefinition('joli_markdown.validator');
-        $validatorDefinition->replaceArgument(0, $fixerDefinition);
     }
 }

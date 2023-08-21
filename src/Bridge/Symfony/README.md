@@ -22,7 +22,7 @@ joli_markdown:
 
 ## Usage
 
-Once the bundle is loaded, a new service is made available: `joli_markdown.fixer` - it is an instance of `JoliMarkdown\MarkdownFixer` configured as per the bundle configuration.
+Once the bundle is loaded, a new service is made available: `@JoliMarkdown\MarkdownFixer` - it is an instance of `JoliMarkdown\MarkdownFixer` configured as per the bundle configuration.
 
 You may use it as you wish:
 
@@ -33,7 +33,7 @@ $markdown = <<<MARKDOWN
     Some paragraph here with an image <img src="/image.png" alt="description" /> inside.
 MARKDOWN;
 
-$fixer = $container->get('joli_markdown.fixer');
+$fixer = $container->get('@JoliMarkdown\MarkdownFixer');
 $fixedMarkdown = $fixer->fix($markdown);
 ```
 
