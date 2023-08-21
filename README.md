@@ -27,7 +27,7 @@ If you are using Symfony, you may want to read the [documentation for the associ
 
 ## Configuration
 
-Several configuration options are available as leage commonmark environment configuration options, to customize the behavior of the Markdown fixer:
+Several configuration options are available as [League CommonMark](https://commonmark.thephpleague.com/) environment configuration options, to customize the behavior of the Markdown fixer:
 
 ```php
 use JoliMarkdown\MarkdownFixer;
