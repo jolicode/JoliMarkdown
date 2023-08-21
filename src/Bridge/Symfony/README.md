@@ -8,10 +8,13 @@ Register the bundle `JoliMarkdown\Bridge\Symfony\JoliMarkdownBundle` in your ker
 
 ```php
 // config/bundles.php
-  new JoliMarkdown\Bridge\Symfony\JoliMarkdownBundle(),
+return [
+    // ...
+    JoliMarkdown\Bridge\Symfony\JoliMarkdownBundle::class => ['all' => true],
+];
 ```
 
-Define the fixer configuration (either in `config/packages/joli_markdown.yaml` or in `config.yml`):
+Define the fixer configuration in `config/packages/joli_markdown.yaml`:
 
 ```yaml
 joli_markdown:
@@ -22,27 +25,29 @@ joli_markdown:
 
 ## Usage
 
-Once the bundle is loaded, a new service is made available: `@JoliMarkdown\MarkdownFixer` - it is an instance of `JoliMarkdown\MarkdownFixer` configured as per the bundle configuration.
+Once the bundle is loaded, a new service is made available: `JoliMarkdown\MarkdownFixer` - it is an instance of `JoliMarkdown\MarkdownFixer` configured as per the bundle configuration.
 
 You may use it as you wish:
 
 ```php
-$markdown = <<<MARKDOWN
-    # A sample Markdown document
+use JoliMarkdown\MarkdownFixer;
 
-    Some paragraph here with an image <img src="/image.png" alt="description" /> inside.
-MARKDOWN;
+class HelloController
+{
+    public function index(MarkdownFixer $fixer)
+    {
+        $markdown = <<<MARKDOWN
+            # A sample Markdown document
 
-$fixer = $container->get('@JoliMarkdown\MarkdownFixer');
-$fixedMarkdown = $fixer->fix($markdown);
-```
+            Some paragraph here with an image <img src="/image.png" alt="description" /> inside.
+        MARKDOWN;
 
-The code above will return a "markdownized" version of the input string:
+        $fixedMarkdown = $fixer->fix($markdown);
+        // # A sample Markdown document
 
-```md
-# A sample Markdown document
-
-Some paragraph here with an image [description](/image.png) inside.
+        // Some paragraph here with an image [description](/image.png) inside.
+    }
+}
 ```
 
 If you need dynamic configuration capabilities for the fixer, rather use the lower level library.
