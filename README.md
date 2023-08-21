@@ -25,6 +25,12 @@ Some paragraph here with an image ![description](/image.png) inside.
 
 If you are using Symfony, you may want to read the [documentation for the associated bundle](src/Bridge/Symfony/README.md).
 
+## Installation
+
+```
+composer require jolicode/jolimarkdown
+```
+
 ## Configuration
 
 Several configuration options are available as [League CommonMark](https://commonmark.thephpleague.com/) environment configuration options, to customize the behavior of the Markdown fixer:
@@ -71,9 +77,9 @@ One of the most robust alternatives, however, is [CommonMark](https://commonmark
 
 Markdown / Commonmark are frequently used in the development world (documentation in the form of a markdown README file, adoption by many publishing platforms) and is often also employed for web publishing. It was, for example, the syntax chosen when the [JoliCode website](https://jolicode.com) was created in 2012, and is still used today to structure the various bodies of content (blog posts, customer references, technologies, team sheets, etc.).
 
-However, over the last 12 years, our way of transforming Markdown content into HTML has changed: writing a few articles in pure HTML, then using a *client-side* javascript Markdown pre-processor (in the Web browser), then finally, over the last few years, migrating to the [`league/commonmark`](https://commonmark.thephpleague.com/) library, which allows you to [transform] Markdown into HTML on the server side, in PHP. This library was chosen because it is particularly complete, well-maintained, extensible and robust.
+However, over the last 12 years, our way of transforming Markdown content into HTML has changed: writing a few articles in pure HTML, then using a *client-side* javascript Markdown pre-processor (in the Web browser), then finally, over the last few years, migrating to the [`league/commonmark`](https://commonmark.thephpleague.com/) library, which allows you to transform Markdown into HTML on the server side, in PHP. This library was chosen because it is particularly complete, well-maintained, extensible and robust.
 
-During the development of `league/commonmark`, extension mechanisms were added, to support different Markdown "extensions", i.e. to support syntax elements that are not part of the CommonMark standard, but bring syntactic flexibility to writers. For example, the ["tables"] extension (https://commonmark.thephpleague.com/2.4/extensions/tables/#syntax) makes it possible to write tables in Markdown, with a lighter, more readable syntax, which is not possible in "standard" CommonMark.
+During the development of `league/commonmark`, extension mechanisms were added, to support different Markdown "extensions", i.e. to support syntax elements that are not part of the CommonMark standard, but bring syntactic flexibility to writers. For example, the [tables extension](https://commonmark.thephpleague.com/2.4/extensions/tables/#syntax) makes it possible to write tables in Markdown, with a lighter, more readable syntax, which is not possible in "standard" CommonMark.
 
 One of the founding features of Markdown is its compatibility with HTML: in Markdown, it's perfectly valid to insert HTML tags into text, and these will simply be passed on as they are in the final HTML document. For example, you can write:
 
@@ -93,7 +99,7 @@ Such a document will be rendered, in HTML, as follows:
 <p>A paragraph in Markdown.</p>
 ```
 
-CommonMark's extension mechanism is therefore interesting, as it allows syntactic elements to be added that the extension will be able to interpret to generate rich, complex HTML output, without the end user (the editor) having to write HTML. This notion of extension is provided for in CommonMark (the [CommonMark specification](https://spec.commonmark.org/0.30/) is itself [written in CommonMark](https://github.com/commonmark/commonmark-spec/blob/master/spec.txt) and uses an extension to generate side-by-side rendering of Markdown syntax and the corresponding HTML output, as can be seen, for example, in the ["Tabs"](https://spec.commonmark.org/0.30/#tabs) section).
+CommonMark's extension mechanism is therefore interesting, as it allows syntactic elements to be added that the extension will be able to interpret to generate rich, complex HTML output, without the end user (the editor) having to write HTML. This notion of extension is provided for in CommonMark (the [CommonMark specification](https://spec.commonmark.org/0.30/) is itself [written in CommonMark](https://github.com/commonmark/commonmark-spec/blob/master/spec.txt) and uses an extension to generate side-by-side rendering of Markdown syntax and the corresponding HTML output, as can be seen, for example, in the [tabs](https://spec.commonmark.org/0.30/#tabs) section).
 
 On the JoliCode site, we've taken advantage of the flexibility of `league/commonmark` to enrich HTML rendering, over the years, so that we can write richer, more expressive, more visual Markdown documents. For example, we've added an extension to write footnotes, HTML tables, strikethrough text, add HTML attributes to external links, automatically add attributes to `<img>` tags, and so on.
 
@@ -110,7 +116,7 @@ For example, we'd like to be able to offer images in modern, higher-performance 
 
 So we're looking for an approach to *correct* existing Markdown articles, replacing the HTML elements they contain with equivalent Markdown elements wherever possible without distorting the final HTML rendering.
 
-An extension, available in `league/commonmark` [for a few years now](https://github.com/thephpleague/commonmark/pull/489), can specifically help us with this task: it's the ["Attributes"] extension(https://commonmark.thephpleague.com/2.4/extensions/attributes/), which lets you add HTML attributes to Markdown elements. For example, you can write:
+An extension, available in `league/commonmark` [for a few years now](https://github.com/thephpleague/commonmark/pull/489), can specifically help us with this task: it's the [Attributes extension](https://commonmark.thephpleague.com/2.4/extensions/attributes/), which lets you add HTML attributes to Markdown elements. For example, you can write:
 
 ```markdown
 {.block-class}
