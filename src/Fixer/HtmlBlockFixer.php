@@ -164,6 +164,10 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                 }
             } elseif ('pre' === $element->tagName) {
                 foreach ($element->childNodes as $key => $child) {
+                    if ($child->childNodes->length !== 1) {
+                        $node = null;
+                        break;
+                    }
                     if ($child instanceof \DOMElement && 'code' === $child->tagName) {
                         $node = new FencedCode(0, '', 0);
                         $childAttributes = $this->getAttributes($child);
