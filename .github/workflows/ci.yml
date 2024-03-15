@@ -18,7 +18,6 @@ jobs:
                     - "8.1"
                     - "8.2"
                     - "8.3"
-
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -27,7 +26,6 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: "${{ matrix.php-versions }}"
-                  extensions: mbstring, dom
                   tools: jolicode/castor
 
             - name: Validate composer.json and composer.lock
@@ -39,11 +37,31 @@ jobs:
             - name: Install quality tools
               run: castor qa:install
 
-            - name: Check coding standards
-              run: castor qa:cs --dry-run
-
             - name: Run PHPStan
               run: castor qa:phpstan
 
             - name: Run tests
               run: castor qa:phpunit
+
+    cs:
+        name: Check PHP coding standards
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.3
+                  tools: jolicode/castor
+
+            - name: Install dependencies
+              run: castor install
+
+            - name: Install quality tools
+              run: castor qa:install --only php-cs-fixer
+
+            - name: Check coding standards
+              run: castor qa:cs --dry-run

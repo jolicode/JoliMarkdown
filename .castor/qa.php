@@ -29,12 +29,23 @@ function all(): void
 }
 
 #[AsTask(description: 'Installs tooling')]
-function install(): void
+function install(?string $only = null): void
 {
-    run('composer install --working-dir tools/php-cs-fixer');
-    run('composer install --working-dir tools/phpstan');
-    run('composer install --working-dir tools/phpunit');
-    run('composer install --working-dir tools/rector');
+    $map = [
+        'php-cs-fixer' => fn() => run('composer install --working-dir tools/php-cs-fixer'),
+        'phpstan' => fn() => run('composer install --working-dir tools/phpstan'),
+        'phpunit' => fn() => run('composer install --working-dir tools/phpunit'),
+        'rector' => fn() => run('composer install --working-dir tools/rector'),
+    ];
+
+    if ($only) {
+        $map = array_filter($map, fn($key) => $key === $only, ARRAY_FILTER_USE_KEY);
+    }
+
+    foreach ($map as $task) {
+        $task();
+    }
+
 }
 
 #[AsTask(description: 'Fix coding standards', aliases: ['cs'])]
