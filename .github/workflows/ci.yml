@@ -1,53 +1,49 @@
 name: Continuous Integration
 
-'on':
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+"on":
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
 
 jobs:
-  ci:
-    name: Run the tests suite
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-versions:
-          - '8.1'
-          - '8.2'
-          - '8.3'
+    ci:
+        name: Run the tests suite
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php-versions:
+                    - "8.1"
+                    - "8.2"
+                    - "8.3"
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '${{ matrix.php-versions }}'
-          extensions: mbstring, dom
-          tools: jolicode/castor
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "${{ matrix.php-versions }}"
+                  extensions: mbstring, dom
+                  tools: jolicode/castor
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+            - name: Validate composer.json and composer.lock
+              run: composer validate --strict
 
-      - name: Install dependencies
-        run: castor install
+            - name: Install dependencies
+              run: castor install
 
-      -
-        name: Install quality tools
-        run: castor qa:install
+            - name: Install quality tools
+              run: castor qa:install
 
-      -
-        name: Check coding standards
-        run: castor qa:cs --dry-run
+            - name: Check coding standards
+              run: castor qa:cs --dry-run
 
-      -
-        name: Run PHPStan
-        run: castor qa:phpstan
+            - name: Run PHPStan
+              run: castor qa:phpstan
 
-      -
-        name: Run tests
-        run: castor qa:phpunit
+            - name: Run tests
+              run: castor qa:phpunit
