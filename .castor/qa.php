@@ -32,20 +32,19 @@ function all(): void
 function install(?string $only = null): void
 {
     $map = [
-        'php-cs-fixer' => fn() => run('composer install --working-dir tools/php-cs-fixer'),
-        'phpstan' => fn() => run('composer install --working-dir tools/phpstan'),
-        'phpunit' => fn() => run('composer install --working-dir tools/phpunit'),
-        'rector' => fn() => run('composer install --working-dir tools/rector'),
+        'php-cs-fixer' => fn () => run('composer install --working-dir tools/php-cs-fixer'),
+        'phpstan' => fn () => run('composer install --working-dir tools/phpstan'),
+        'phpunit' => fn () => run('composer install --working-dir tools/phpunit'),
+        'rector' => fn () => run('composer install --working-dir tools/rector'),
     ];
 
     if ($only) {
-        $map = array_filter($map, fn($key) => $key === $only, ARRAY_FILTER_USE_KEY);
+        $map = array_filter($map, fn ($key) => $key === $only, \ARRAY_FILTER_USE_KEY);
     }
 
     foreach ($map as $task) {
         $task();
     }
-
 }
 
 #[AsTask(description: 'Fix coding standards', aliases: ['cs'])]
