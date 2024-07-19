@@ -33,8 +33,8 @@ class MarkdownFixer
     private readonly MarkdownRenderer $markdownRenderer;
 
     public function __construct(
-        Environment $environment = null,
-        LoggerInterface $logger = null,
+        ?Environment $environment = null,
+        ?LoggerInterface $logger = null,
     ) {
         if (null === $environment) {
             $environment = new Environment();
