@@ -84,8 +84,12 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                                 $exploded = explode($key, $newNode->getLiteral());
 
                                 if (2 === \count($exploded)) {
-                                    $className = $newNode::class;
-                                    $newNodes = [...\array_slice($newNodes, 0, $newNodeKey), new $className($exploded[0]), $replacement, new $className($exploded[1]), ...\array_slice($newNodes, $newNodeKey + 1)];
+                                    if ($newNode instanceof FencedCode) {
+                                        $newNode->setLiteral(str_replace($key, '', $newNode->getLiteral()));
+                                    } else {
+                                        $className = $newNode::class;
+                                        $newNodes = [...\array_slice($newNodes, 0, $newNodeKey), new $className($exploded[0]), $replacement, new $className($exploded[1]), ...\array_slice($newNodes, $newNodeKey + 1)];
+                                    }
                                 }
                             }
                         }
