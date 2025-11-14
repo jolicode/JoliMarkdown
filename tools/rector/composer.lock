@@ -4,20 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "072caf25bad7cdd333bf7ae9982b2bcc",
+    "content-hash": "ebd2ca42c1e81567bc3fd18a9bb9050f",
     "packages": [
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.62",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "cd5c8a1660ed3540b211407c77abf4af193a6af9"
-            },
+            "version": "1.12.32",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cd5c8a1660ed3540b211407c77abf4af193a6af9",
-                "reference": "cd5c8a1660ed3540b211407c77abf4af193a6af9",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/2770dcdf5078d0b0d53f94317e06affe88419aa8",
+                "reference": "2770dcdf5078d0b0d53f94317e06affe88419aa8",
                 "shasum": ""
             },
             "require": {
@@ -60,37 +55,36 @@
                 {
                     "url": "https://github.com/phpstan",
                     "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
-                    "type": "tidelift"
                 }
             ],
-            "time": "2024-03-13T12:27:20+00:00"
+            "time": "2025-09-30T10:16:31+00:00"
         },
         {
             "name": "rector/rector",
-            "version": "0.17.13",
+            "version": "1.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "e2003ba7c5bda06d7bb419cf4be8dae5f8672132"
+                "reference": "40f9cf38c05296bd32f444121336a521a293fa61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/e2003ba7c5bda06d7bb419cf4be8dae5f8672132",
-                "reference": "e2003ba7c5bda06d7bb419cf4be8dae5f8672132",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/40f9cf38c05296bd32f444121336a521a293fa61",
+                "reference": "40f9cf38c05296bd32f444121336a521a293fa61",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2|^8.0",
-                "phpstan/phpstan": "^1.10.26"
+                "phpstan/phpstan": "^1.12.5"
             },
             "conflict": {
                 "rector/rector-doctrine": "*",
                 "rector/rector-downgrade-php": "*",
                 "rector/rector-phpunit": "*",
                 "rector/rector-symfony": "*"
+            },
+            "suggest": {
+                "ext-dom": "To manipulate phpunit.xml via the custom-rule command"
             },
             "bin": [
                 "bin/rector"
@@ -114,7 +108,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/0.17.13"
+                "source": "https://github.com/rectorphp/rector/tree/1.2.10"
             },
             "funding": [
                 {
@@ -122,19 +116,19 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-08-14T16:33:29+00:00"
+            "time": "2024-11-08T13:59:10+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "platform-overrides": {
-        "php": "8.1"
+        "php": "8.3"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

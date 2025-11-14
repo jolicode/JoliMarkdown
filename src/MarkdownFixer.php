@@ -46,7 +46,7 @@ class MarkdownFixer
         $internalDomains = $environment->getConfiguration()->get('joli_markdown/internal_domains');
 
         if (\is_array($internalDomains) && 0 !== \count($internalDomains)) {
-            $internalDomainsPattern = sprintf(
+            $internalDomainsPattern = \sprintf(
                 '#^(https?)?://(%s)/?#',
                 implode('|', $internalDomains),
             );

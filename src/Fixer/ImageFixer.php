@@ -47,7 +47,7 @@ class ImageFixer extends AbstractFixer implements FixerInterface
 
             if (str_starts_with($node->getUrl(), 'http')) {
                 $this->logger->notice(
-                    sprintf(
+                    \sprintf(
                         'Image with absolute path found: %s',
                         $node->getUrl(),
                     )

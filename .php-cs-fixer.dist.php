@@ -30,7 +30,7 @@ $header = <<<'EOF'
 return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
-        '@PHP81Migration' => true,
+        '@PHP83Migration' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'concat_space' => ['spacing' => 'one'],

@@ -26,13 +26,14 @@ use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Parser\MarkdownParser;
 use League\CommonMark\Renderer\HtmlRenderer;
 use League\CommonMark\Util\HtmlFilter;
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- *
- * @coversNothing
  */
+#[CoversNothing()]
 final class MarkdownFixerTest extends TestCase
 {
     private MarkdownFixer $markdownFixer;
@@ -86,46 +87,35 @@ final class MarkdownFixerTest extends TestCase
         $this->htmlRenderer = new HtmlRenderer($environment);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
-    public function testFixer(string $inputMarkdown, string $expectedMarkdown, string $convertedhtml, string $testName): void
+    #[DataProvider('dataProvider')]
+    public function testFixer(string $inputMarkdown, string $expectedMarkdown, string $convertedHtml, string $testName): void
     {
         $this->assertFixMarkdown($inputMarkdown, $expectedMarkdown, $testName);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
-    public function testRenderer(string $inputMarkdown, string $expectedMarkdown, string $expectedhtml, string $testName): void
+    #[DataProvider('dataProvider')]
+    public function testRenderer(string $inputMarkdown, string $expectedMarkdown, string $expectedHtml, string $testName): void
     {
-        $this->assertConvertToHtml($expectedMarkdown, $expectedhtml, $testName);
+        $this->assertConvertToHtml($expectedMarkdown, $expectedHtml, $testName);
     }
 
-    /**
-     * @return array
-     */
-    public function dataProvider()
+    public static function dataProvider(): iterable
     {
-        $ret = [];
-
         foreach (glob(__DIR__ . '/data/*-in.md') as $markdownFile) {
             $testName = basename((string) $markdownFile, '-in.md');
             $inputMarkdown = file_get_contents($markdownFile);
             $expectedMarkdown = file_get_contents(__DIR__ . '/data/' . $testName . '-out.md');
-            $expectedhtml = file_get_contents(__DIR__ . '/data/' . $testName . '-out.html');
+            $expectedHtml = file_get_contents(__DIR__ . '/data/' . $testName . '-out.html');
 
-            yield [$inputMarkdown, $expectedMarkdown, $expectedhtml, $testName];
+            yield [$inputMarkdown, $expectedMarkdown, $expectedHtml, $testName];
         }
-
-        return $ret;
     }
 
     protected function assertFixMarkdown(string $inputMarkdown, string $expectedMarkdown, string $testName): void
     {
         $fixedMarkdown = $this->markdownFixer->fix($inputMarkdown);
 
-        static::assertSame($expectedMarkdown, $fixedMarkdown, sprintf('Unexpected result for "%s" test', $testName));
+        static::assertSame($expectedMarkdown, $fixedMarkdown, \sprintf('Unexpected result for "%s" test', $testName));
 
         $lastMarkdown = $fixedMarkdown;
         $i = 0;
@@ -136,7 +126,7 @@ final class MarkdownFixerTest extends TestCase
 
             ++$i;
         }
-        static::assertSame($lastMarkdown, $previousMarkdown, sprintf('Unexpected multi-pass result for "%s" test', $testName));
+        static::assertSame($lastMarkdown, $previousMarkdown, \sprintf('Unexpected multi-pass result for "%s" test', $testName));
     }
 
     protected function assertConvertToHtml(string $markdown, string $expectedHtml, string $testName): void
@@ -144,7 +134,7 @@ final class MarkdownFixerTest extends TestCase
         $document = $this->docParser->parse($markdown);
         $actualHtml = $this->htmlRenderer->renderDocument($document)->getContent();
 
-        $failureMessage = sprintf('Unexpected result for "%s" test', $testName);
+        $failureMessage = \sprintf('Unexpected result for "%s" test', $testName);
         $failureMessage .= "\n=== markdown ===============\n" . $markdown;
         $failureMessage .= "\n=== expected ===============\n" . $expectedHtml . '(strlen=' . mb_strlen($expectedHtml) . ')';
         $failureMessage .= "\n=== got ====================\n" . $actualHtml . '(strlen=' . mb_strlen($actualHtml) . ')';
