@@ -47,7 +47,7 @@ final class ListBlockRenderer implements NodeRendererInterface, ConfigurationAwa
             $content = array_map(function (string $item): string {
                 if (preg_match('/^LIST_BULLET_POINT/', $item)) {
                     // this is an item
-                    return sprintf('%s %s',
+                    return \sprintf('%s %s',
                         $this->config->get('joli_markdown/unordered_list_marker'),
                         mb_substr($item, 17),
                     );

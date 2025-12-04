@@ -16,10 +16,14 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
+    /**
+     * @return TreeBuilder<'array'>
+     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('joli_markdown');
 
+        /* @phpstan-ignore class.notFound */
         $treeBuilder->getRootNode()
             ->children()
                 ->booleanNode('prefer_asterisk_over_underscore')

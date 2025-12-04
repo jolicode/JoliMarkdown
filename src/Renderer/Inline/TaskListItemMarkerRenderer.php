@@ -25,6 +25,6 @@ final class TaskListItemMarkerRenderer implements NodeRendererInterface
      */
     public function render(Node $node, ChildNodeRendererInterface $childRenderer): string
     {
-        return sprintf('[%s]', $node->isChecked() ? 'x' : ' ');
+        return \sprintf('[%s]', $node->isChecked() ? 'x' : ' ');
     }
 }

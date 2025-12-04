@@ -1,10 +1,11 @@
 {
     "require": {
-        "rector/rector": "^0.17"
+        "rector/rector": "^1.2.10"
     },
     "config": {
+        "bump-after-update": true,
         "platform": {
-            "php": "8.1"
+            "php": "8.3"
         },
         "sort-packages": true
     }

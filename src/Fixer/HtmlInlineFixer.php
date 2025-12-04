@@ -103,7 +103,7 @@ class HtmlInlineFixer extends HtmlBlockFixer
         }
 
         if (!$isClosed) {
-            $this->logger->info(sprintf('<%s> tag is NOT closed', $matches[1]));
+            $this->logger->info(\sprintf('<%s> tag is NOT closed', $matches[1]));
         }
 
         $fixedNodes = $this->fixAndReplace(

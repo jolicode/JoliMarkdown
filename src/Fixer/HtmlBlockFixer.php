@@ -207,7 +207,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
 
                 if (\count($attributes) > 0) {
                     // the span has attributes, so enclose its childNodes in CommonmarkContainers
-                    $openingNode = new InlineCommonmarkContainer(sprintf(
+                    $openingNode = new InlineCommonmarkContainer(\sprintf(
                         '<span%s>',
                         $this->outputAttributes($attributes),
                     ));
@@ -292,7 +292,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                     // try to let self-closed html tags as-is
                     preg_match('/^<\s*([a-z0-9-]+)(\s[^>]*)?\/>$/', $elementXml, $matches);
 
-                    if (isset($matches[1]) && preg_match(sprintf('/^<%s(\s[^>]*)?\>.*<\/%s>$/', $matches[1], $matches[1]), $converted, $subMatches)) {
+                    if (isset($matches[1]) && preg_match(\sprintf('/^<%s(\s[^>]*)?\>.*<\/%s>$/', $matches[1], $matches[1]), $converted, $subMatches)) {
                         if (\in_array($matches[1], ['br', 'hr', 'source'])) {
                             $converted = $elementXml;
                         } else {
@@ -300,7 +300,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                         }
                     }
 
-                    if (isset($tagNameMatches[1]) || isset($matches[1]) && preg_match(sprintf('/^<%s(\s.*)?>$/', $matches[1]), $converted, $subMatches)) {
+                    if (isset($tagNameMatches[1]) || isset($matches[1]) && preg_match(\sprintf('/^<%s(\s.*)?>$/', $matches[1]), $converted, $subMatches)) {
                         $attributes = [];
                     }
                 } else {
@@ -445,10 +445,10 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
             $attributes = '';
 
             foreach ($nodes[0]->data->get('attributes') as $key => $value) {
-                $attributes .= sprintf(' %s="%s"', $key, Xml::escape($value));
+                $attributes .= \sprintf(' %s="%s"', $key, Xml::escape($value));
             }
 
-            $literal = sprintf('<div%s>%s</div>', $attributes, $literal);
+            $literal = \sprintf('<div%s>%s</div>', $attributes, $literal);
         }
 
         $dom = new \DOMDocument();
@@ -498,6 +498,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
 
         foreach ($newChildren as $key => $child) {
             if ($child === $node) {
+                // @phpstan-ignore offsetAccess.nonOffsetAccessible
                 unset($newChildren[$key]);
             }
         }
@@ -602,7 +603,7 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
         }
 
         if (!$isClosed) {
-            $this->logger->info(sprintf('<%s> tag is NOT closed', $matches[1]));
+            $this->logger->info(\sprintf('<%s> tag is NOT closed', $matches[1]));
         }
 
         $fixedNodes = $this->fixAndReplace($literal, $closingNodes);
