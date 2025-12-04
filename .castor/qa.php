@@ -88,7 +88,7 @@ function phpstan(): int
 }
 
 #[AsTask(description: 'Run the phpunit tests', ignoreValidationErrors: true, aliases: ['phpunit'])]
-function phpunit(#[AsRawTokens] array $rawTokens): int
+function phpunit(#[AsRawTokens] array $rawTokens = []): int
 {
     return exit_code(['tools/phpunit/vendor/bin/phpunit', ...$rawTokens]);
 }

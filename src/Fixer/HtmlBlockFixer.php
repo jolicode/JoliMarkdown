@@ -254,9 +254,11 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
             } elseif ('img' === $element->tagName) {
                 if (!isset($attributes['src'])) {
                     $this->logger->notice('Image without src attribute');
+                    $url = '';
+                } else {
+                    $url = $attributes['src'] ? UrlEncoder::unescapeAndEncode($attributes['src']) : '';
                 }
 
-                $url = $attributes['src'] ? UrlEncoder::unescapeAndEncode($attributes['src']) : '';
                 $node = new Image($url, $attributes['alt'] ?? '', $attributes['title'] ?? '');
                 $node->data['attributes'] = $attributes;
             } elseif ('code' === $element->tagName) {
