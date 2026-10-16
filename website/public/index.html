@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="favicon.svg">
+        <title>JoliMarkdown demo - Syntax fixer for Markdown content</title>
+        <meta name="description" content="Paste Markdown, even mixed with raw HTML, and see what JoliMarkdown fixes. The PHP library runs in your browser, compiled to WebAssembly.">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Onest:wght@400;500;600;700&display=swap">
+        <link rel="stylesheet" href="build/app.css">
+        <script type="importmap">
+            {
+                "imports": {
+                    "diff/lib/diff/word": "https://cdn.jsdelivr.net/npm/diff@5.2.0/lib/diff/word.js/+esm",
+                    "diff/lib/patch/create":"https://cdn.jsdelivr.net/npm/diff@5.2.0/lib/patch/create.js/+esm"
+                }
+            }
+        </script>
+        <script type="module" src="app.js"></script>
+    </head>
+    <body class="bg-white text-slate-800 antialiased">
+        <header class="border-b border-slate-200">
+            <div class="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-x-10 gap-y-5 px-4 py-8 sm:px-6">
+                <div class="max-w-2xl">
+                    <h1 class="text-4xl font-bold tracking-tight text-blue-400 sm:text-5xl">JoliMarkdown</h1>
+                    <p class="mt-3 text-lg text-slate-600 text-pretty">
+                        Turns messy Markdown, raw HTML included, into clean and consistent Markdown.
+                    </p>
+                    <p id="php_status" class="mt-3 flex items-center gap-2 text-sm text-slate-500" aria-live="polite">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        <span data-label>Starting PHP in your browser…</span>
+                    </p>
+                </div>
+                <div class="flex flex-col gap-3 sm:items-end">
+                    <button type="button" id="composer_copy" class="group flex items-center gap-3 rounded-lg bg-slate-900 py-2 pl-4 pr-2 text-left transition-colors hover:bg-slate-800">
+                        <code class="code text-sm text-slate-100"><span class="select-none text-slate-500">$ </span>composer require jolicode/jolimarkdown</code>
+                        <span class="rounded-md bg-slate-700 px-2 py-1 text-xs font-medium text-slate-200 group-hover:bg-blue-500 group-hover:text-white" data-label>Copy</span>
+                    </button>
+                    <p class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                        <a href="https://github.com/jolicode/JoliMarkdown" class="link">GitHub</a>
+                        <a href="https://jolicode.com/blog/introducing-jolimarkdown-an-attempt-to-make-markdown-content-more-robust-and-rigorous" class="link">Why JoliMarkdown</a>
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <main class="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+            <section aria-labelledby="examples_title" class="pt-8">
+                <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                    <h2 id="examples_title" class="text-base font-semibold text-slate-900">What it fixes</h2>
+                    <p class="text-sm text-slate-500">Pick an example to see what the fixer does with it.</p>
+                </div>
+                <div id="markdown_fixer_examples" class="-mx-4 mt-4 flex snap-x gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 md:grid-cols-4 xl:grid-cols-6" role="radiogroup" aria-labelledby="examples_title">
+                    <label class="example"><input type="radio" name="example" value="image_html" disabled><span class="code example-tag">&lt;img&gt;</span><span class="example-caption">becomes <span class="code">![alt](src)</span>, URL encoded</span></label>
+                    <label class="example"><input type="radio" name="example" value="table_html" disabled><span class="code example-tag">&lt;table&gt;</span><span class="example-caption">becomes a Markdown table</span></label>
+                    <label class="example"><input type="radio" name="example" value="link" disabled><span class="code example-tag">&lt;a&gt;</span><span class="example-caption">becomes a link, internal URLs made relative</span></label>
+                    <label class="example"><input type="radio" name="example" value="blockquote_html" disabled><span class="code example-tag">&lt;blockquote&gt;</span><span class="example-caption">becomes a <span class="code">&gt;</span> quote, attributes kept</span></label>
+                    <label class="example"><input type="radio" name="example" value="code_block_html" disabled><span class="code example-tag">&lt;pre&gt;&lt;code&gt;</span><span class="example-caption">becomes a fenced code block</span></label>
+                    <label class="example"><input type="radio" name="example" value="code_inline_html" disabled><span class="code example-tag">&lt;code&gt;</span><span class="example-caption">becomes inline code</span></label>
+                    <label class="example"><input type="radio" name="example" value="div_tag" disabled><span class="code example-tag">&lt;div&gt;</span><span class="example-caption">becomes a paragraph with attributes</span></label>
+                    <label class="example"><input type="radio" name="example" value="br_tag" disabled><span class="code example-tag">&lt;br&gt; &lt;hr&gt;</span><span class="example-caption">normalized, <span class="code">&lt;hr&gt;</span> becomes <span class="code">---</span></span></label>
+                    <label class="example"><input type="radio" name="example" value="unordered_list_with_children" disabled><span class="example-tag">Nested lists</span><span class="example-caption">one marker, images inside converted</span></label>
+                    <label class="example"><input type="radio" name="example" value="footnotes" disabled><span class="example-tag">Footnotes</span><span class="example-caption">kept, HTML inside converted</span></label>
+                    <label class="example"><input type="radio" name="example" value="html_comment" disabled><span class="code example-tag">&lt;!-- --&gt;</span><span class="example-caption">comments kept, HTML around converted</span></label>
+                    <label class="example"><input type="radio" name="example" value="abbr" disabled><span class="code example-tag">&lt;abbr&gt;</span><span class="example-caption">broken attributes repaired</span></label>
+                </div>
+            </section>
+
+            <form id="markdown_fixer" class="mt-8 overflow-hidden rounded-xl bg-slate-900">
+                <fieldset class="grid min-w-0 border-b border-slate-800 bg-slate-800/40 text-sm sm:grid-cols-[auto_auto_minmax(0,1fr)]">
+                    <legend class="sr-only">Fixer options</legend>
+                    <div class="option" role="radiogroup" aria-labelledby="marker_label">
+                        <span id="marker_label" class="option-label">List marker</span>
+                        <div class="segmented">
+                            <label><input type="radio" name="unorderedListMarker" value="*"><span class="code">*</span></label>
+                            <label><input type="radio" name="unorderedListMarker" value="-" checked><span class="code">-</span></label>
+                            <label><input type="radio" name="unorderedListMarker" value="+"><span class="code">+</span></label>
+                        </div>
+                    </div>
+                    <div class="option" role="radiogroup" aria-labelledby="emphasis_label">
+                        <span id="emphasis_label" class="option-label">Emphasis marker</span>
+                        <div class="segmented">
+                            <label><input type="radio" name="emphasisMarker" value="*" checked><span class="code">*em* **strong**</span></label>
+                            <label><input type="radio" name="emphasisMarker" value="_"><span class="code">_em_ __strong__</span></label>
+                        </div>
+                    </div>
+                    <label class="option">
+                        <span class="option-label">Make URLs relative for these domains</span>
+                        <input type="text" name="internalDomains" class="field code w-full" value="www.internaldomain.com" placeholder="example.com, www.example.com" autocomplete="off" spellcheck="false">
+                    </label>
+                </fieldset>
+
+                <div class="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+                    <div class="flex flex-col border-b border-slate-800 lg:border-b-0 lg:border-r">
+                        <div class="panel-head">
+                            <label for="markdown_fixer_editor" class="font-semibold text-white">Your Markdown</label>
+                            <span id="markdown_fixer_source" class="truncate text-slate-400">Pick an example or paste your own</span>
+                        </div>
+                        <textarea
+                            id="markdown_fixer_editor"
+                            name="editor"
+                            class="code panel-body resize-none"
+                            placeholder="Paste Markdown here, HTML tags welcome…"
+                            spellcheck="false"
+                        ></textarea>
+                    </div>
+
+                    <div class="flex min-w-0 flex-col">
+                        <div class="panel-head">
+                            <h2 id="markdown_fixer_summary" class="font-semibold text-white" aria-live="polite">Waiting for PHP…</h2>
+                            <div class="flex items-center gap-2">
+                                <div class="segmented" role="tablist" aria-label="Output">
+                                    <button type="button" role="tab" id="tab_diff" aria-controls="markdown_fixer_diff" aria-selected="true">Diff</button>
+                                    <button type="button" role="tab" id="tab_result" aria-controls="markdown_fixer_result" aria-selected="false">Fixed Markdown</button>
+                                </div>
+                                <button type="button" id="markdown_fixer_copy" class="button" disabled>Copy</button>
+                            </div>
+                        </div>
+                        <div id="markdown_fixer_diff" class="code panel-body diff" role="tabpanel" aria-labelledby="tab_diff" tabindex="0">
+                            <p class="diff-message">Starting PHP in your browser. The first visit downloads the PHP runtime, the next ones load it from the cache.</p>
+                        </div>
+                        <textarea
+                            id="markdown_fixer_result"
+                            class="code panel-body hidden resize-none"
+                            role="tabpanel"
+                            aria-labelledby="tab_result"
+                            spellcheck="false"
+                            readonly
+                        ></textarea>
+                    </div>
+                </div>
+            </form>
+        </main>
+
+        <!-- The JoliCode open-source footer (jolicode/oss-theme), downloaded by "castor website:build" -->
+        <div class="js-joli-footer"></div>
+        <script type="module">
+            const footer = await fetch("build/joli-footer.html");
+            if (footer.ok) {
+                document.querySelector(".js-joli-footer").outerHTML = await footer.text();
+            }
+        </script>
+    </body>
+</html>
