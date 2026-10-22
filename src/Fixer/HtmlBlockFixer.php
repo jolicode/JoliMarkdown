@@ -286,7 +286,11 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                 $elementHtml = $element->ownerDocument->saveHTML($element);
 
                 if (false !== $elementHtml && false !== $elementXml) {
-                    $converted = $this->htmlConverter->convert($elementHtml);
+                    // html-to-markdown >= 5.1.3 drops the tags inside a pre or a code: keep their HTML from the DOM instead
+                    $hasCode = \in_array($element->tagName, ['pre', 'code'], true)
+                        || $element->getElementsByTagName('pre')->length > 0
+                        || $element->getElementsByTagName('code')->length > 0;
+                    $converted = $hasCode ? $elementXml : $this->htmlConverter->convert($elementHtml);
 
                     // search for the tag name
                     preg_match('/^\s*<([^\s>]+).*>/', $converted, $tagNameMatches);
