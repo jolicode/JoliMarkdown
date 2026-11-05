@@ -286,7 +286,16 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                 $elementHtml = $element->ownerDocument->saveHTML($element);
 
                 if (false !== $elementHtml && false !== $elementXml) {
-                    $converted = $this->htmlConverter->convert($elementHtml);
+                    // html-to-markdown >= 5.1.3 drops the tags inside a pre or a code: keep their HTML from the DOM instead
+                    $hasCode = \in_array($element->tagName, ['pre', 'code'], true)
+                        || $element->getElementsByTagName('pre')->length > 0
+                        || $element->getElementsByTagName('code')->length > 0;
+                    $converted = match (true) {
+                        $hasCode => $elementXml,
+                        // With libxml >= 2.14, html-to-markdown leaves its wrapper around what goes in <head> (thephpleague/html-to-markdown#263)
+                        \in_array($element->tagName, ['base', 'link', 'meta', 'script', 'style', 'title'], true) => $elementHtml,
+                        default => $this->htmlConverter->convert($elementHtml),
+                    };
 
                     // search for the tag name
                     preg_match('/^\s*<([^\s>]+).*>/', $converted, $tagNameMatches);
