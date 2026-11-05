@@ -1,0 +1,74 @@
+name: Build the public website, and publish to GitHub Pages
+
+"on":
+    push:
+        branches: ["main"]
+    workflow_dispatch:
+    # Only builds (and checks the fixer in the WASM build), never deploys
+    pull_request:
+        paths:
+            - "src/**"
+            - "website/**"
+            - ".castor/website.php"
+            - "castor.composer.*"
+            - ".github/workflows/website.yml"
+
+permissions:
+    contents: read
+
+concurrency:
+    group: website-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                persist-credentials: false
+
+            - name: Set up PHP
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+              with:
+                  php-version: "8.5"
+
+            - name: Set up Castor
+              uses: castor-php/setup-castor@2a495b8c91f00be6768ad8a040ba8634c797d386 # v1.1.0
+
+            # The cache of the PHP build needs the docker-container driver of buildx
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+            # And the runtime token and URLs of GitHub Actions, that only actions get
+            - name: Expose the GitHub runtime
+              uses: crazy-max/ghaction-github-runtime@04d248b84655b509d8c44dc1d6f990c879747487 # v4.0.0
+
+            - name: Build
+              run: castor website:build --set '*.cache-from=type=gha' --set '*.cache-to=type=gha,mode=max,ignore-error=true'
+
+            - name: Upload Artifact
+              if: github.event_name != 'pull_request'
+              uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+              with:
+                  path: "website/public"
+
+    deploy:
+        if: github.event_name != 'pull_request'
+        needs: build
+        runs-on: ubuntu-latest
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{steps.deployment.outputs.page_url}}
+        steps:
+            - name: Setup Pages
+              uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

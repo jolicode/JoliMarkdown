@@ -15,3 +15,11 @@ tools/*/vendor/
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
+
+# castor remote imports (castor.composer.json)
+/.castor/vendor/
+
+# website (castor website:build)
+/build/
+/website/build/
+/website/public/build/

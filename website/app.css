@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        font-family: Onest, ui-sans-serif, system-ui, sans-serif;
+        scrollbar-color: theme('colors.slate.300') transparent;
+    }
+
+    ::selection {
+        background: theme('colors.blue.100');
+    }
+
+    :focus-visible {
+        outline: 2px solid theme('colors.blue.400');
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    .code {
+        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-variant-ligatures: none;
+    }
+
+    .link {
+        @apply font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition-colors hover:decoration-slate-900;
+    }
+
+    .button {
+        @apply rounded-md border border-slate-700 bg-slate-800 px-3 py-1 text-sm font-medium text-slate-300 transition-colors hover:border-blue-400 hover:text-blue-300 disabled:pointer-events-none disabled:opacity-50;
+    }
+
+    .field {
+        @apply rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 hover:border-slate-600;
+    }
+
+    /* Example tiles: radios, so the arrow keys move between them */
+    .example {
+        @apply relative flex w-56 shrink-0 cursor-pointer snap-start flex-col gap-1 rounded-lg border border-slate-200 bg-white p-3 transition-colors hover:border-blue-300 sm:w-auto;
+    }
+
+    .example input {
+        @apply absolute inset-0 cursor-pointer appearance-none rounded-lg;
+    }
+
+    .example:has(input:checked) {
+        @apply border-blue-400 bg-blue-50;
+    }
+
+    /* The blue of the title */
+    .example:has(input:checked) .example-tag {
+        @apply text-blue-400;
+    }
+
+    .example:has(input:disabled) {
+        @apply cursor-wait;
+    }
+
+    .example-tag {
+        @apply text-sm font-semibold text-slate-900;
+    }
+
+    .example-caption {
+        @apply text-sm leading-snug text-slate-500;
+    }
+
+    .segmented {
+        @apply inline-flex rounded-md border border-slate-700 bg-slate-800 p-0.5;
+    }
+
+    .segmented label {
+        @apply relative;
+    }
+
+    .segmented input {
+        @apply absolute inset-0 cursor-pointer appearance-none rounded;
+    }
+
+    .segmented span,
+    .segmented button {
+        @apply block rounded px-2.5 py-0.5 text-sm text-slate-400 transition-colors;
+    }
+
+    .segmented input:checked + span,
+    .segmented button[aria-selected='true'] {
+        @apply bg-blue-400/15 font-semibold text-blue-300;
+    }
+
+    .option {
+        @apply flex flex-col items-start gap-1.5 px-4 py-3 sm:px-5;
+    }
+
+    /* Not divide-*: the hidden legend would count as the first option */
+    .option + .option {
+        @apply border-t border-slate-800 sm:border-l sm:border-t-0;
+    }
+
+    .option-label {
+        @apply text-xs font-medium text-slate-400;
+    }
+
+    .status-dot {
+        @apply h-2 w-2 rounded-full bg-slate-300;
+        animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    [data-state='ready'] .status-dot {
+        @apply bg-blue-400;
+        animation: none;
+    }
+
+    [data-state='error'] .status-dot {
+        @apply bg-rose-500;
+        animation: none;
+    }
+
+    .panel-head {
+        @apply flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-800 bg-slate-800/40 px-4 py-2.5 text-sm sm:px-5;
+    }
+
+    .panel-body {
+        @apply h-64 w-full lg:h-[max(24rem,calc(100vh-22rem))] overflow-auto bg-slate-900 p-4 text-[13px] leading-relaxed text-slate-100 caret-blue-400 placeholder:text-slate-500 sm:px-5;
+        scrollbar-color: theme('colors.slate.600') transparent;
+    }
+
+    .panel-body::selection,
+    .panel-body ::selection {
+        background: theme('colors.blue.800');
+    }
+
+    textarea.panel-body:focus-visible,
+    .diff:focus-visible {
+        @apply outline-none ring-2 ring-inset ring-blue-400/60;
+    }
+
+    /* Unified diff, on the dark code background: additions in the brand blue, deletions in muted rose */
+    /* Below lg the diff grows with its content rather than scrolling inside the page */
+    .diff {
+        @apply h-auto min-h-40 px-0 pt-0 sm:px-0 lg:h-[max(24rem,calc(100vh-22rem))];
+    }
+
+    .diff-line {
+        @apply grid grid-cols-[2.75rem_2.75rem_1.5rem_minmax(0,1fr)] whitespace-pre-wrap break-words;
+    }
+
+    .diff-line > span:nth-child(-n + 2) {
+        @apply select-none pr-2 text-right tabular-nums text-slate-400;
+    }
+
+    .diff-line > span:nth-child(3) {
+        @apply select-none text-center;
+    }
+
+    .diff-line.is-added {
+        @apply bg-blue-400/10 text-blue-100;
+    }
+
+    .diff-line.is-added > span:nth-child(3) {
+        @apply text-blue-400;
+    }
+
+    .diff-line.is-removed {
+        @apply bg-rose-400/10 text-rose-100;
+    }
+
+    .diff-line.is-removed > span:nth-child(3) {
+        @apply text-rose-400;
+    }
+
+    /* The words that changed inside a modified line */
+    .diff-line del {
+        @apply rounded-sm bg-rose-400/30 no-underline;
+    }
+
+    .diff-line ins {
+        @apply rounded-sm bg-blue-400/30 no-underline;
+    }
+
+    .diff-hunk {
+        @apply mt-3 border-y border-slate-800 bg-slate-800/60 px-4 py-1 text-xs text-slate-400 first:mt-0 sm:px-5;
+    }
+
+    .diff-meta {
+        @apply pl-[7rem] text-xs italic text-slate-400;
+    }
+
+    .diff-message {
+        @apply max-w-prose p-4 font-sans text-[13px] leading-relaxed text-slate-400 sm:px-5;
+    }
+
+    .diff-message.is-error {
+        @apply text-rose-300;
+    }
+}
+
+/* The JoliCode footer, on the dark of the demo */
+.jf-footer {
+    --jf-color-gray-900: theme('colors.slate.900');
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0.3;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

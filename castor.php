@@ -14,6 +14,8 @@ use Castor\Attribute\AsTask;
 use function Castor\import;
 use function Castor\run;
 
+defined('CASTOR_USE_CHDIR') || define('CASTOR_USE_CHDIR', false);
+
 import(__DIR__ . '/.castor');
 
 #[AsTask(description: 'Installs the application (composer, yarn, ...)')]
