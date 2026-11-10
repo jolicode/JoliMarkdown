@@ -12,6 +12,7 @@
 namespace JoliMarkdown\Fixer;
 
 use JoliMarkdown\Node\Block\CommonmarkContainer;
+use JoliMarkdown\Node\Block\HtmlWrapperTag;
 use JoliMarkdown\Node\Inline\CommonmarkContainer as InlineCommonmarkContainer;
 use League\CommonMark\Extension\CommonMark\Node\Block\BlockQuote;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
@@ -39,6 +40,15 @@ use Psr\Log\LoggerInterface;
 
 class HtmlBlockFixer extends AbstractFixer implements FixerInterface
 {
+    private const BLOCK_TAGS = ['blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'ol', 'p', 'pre', 'ul'];
+    /**
+     * The markdown blocks found between the tags of the html block being
+     * fixed, indexed by the placeholder that replaces them in its literal.
+     *
+     * @var array<string, Node>
+     */
+    private array $nodesReplacements = [];
+
     public function __construct(
         protected readonly LoggerInterface $logger,
         private readonly HtmlConverter $htmlConverter,
@@ -155,6 +165,11 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
                             )
                         )
                     ) {
+                        if ('div' === $element->tagName && $canConvertStyledDiv && \count($attributes) > 0 && $this->hasBlockChildren($element)) {
+                            // the attributes belong to a wrapper, which markdown cannot express
+                            return $this->buildBlockWrapper($element, $attributes);
+                        }
+
                         $node = new Paragraph();
                         $node->data['attributes'] = $attributes;
                         $this->appendChildElementsAsChildNodes($element, $node, $canConvertStyledDiv && 0 === \count($attributes));
@@ -327,6 +342,111 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
         }
 
         return $node;
+    }
+
+    /**
+     * Whether the element has block children: markdown blocks found between
+     * its tags, or HTML block elements that are converted to markdown blocks.
+     */
+    protected function hasBlockChildren(\DOMElement $element): bool
+    {
+        foreach ($element->childNodes as $child) {
+            if ($child instanceof \DOMElement && \in_array($child->tagName, self::BLOCK_TAGS, true)) {
+                return true;
+            }
+
+            if ($child instanceof \DOMText && \count($this->splitReplacements((string) $child->nodeValue)) > 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * A div with attributes and block children cannot become a paragraph with
+     * attributes, as these would apply to its first child once rendered. The
+     * div tags are kept as HTML, around its children converted to markdown.
+     *
+     * @param array<string, string|null> $attributes
+     *
+     * @return Node[]
+     */
+    protected function buildBlockWrapper(\DOMElement $element, array $attributes): array
+    {
+        $childNodes = [];
+
+        foreach ($element->childNodes as $key => $child) {
+            if ($child instanceof \DOMText) {
+                // restore the markdown blocks found between the tags
+                foreach ($this->splitReplacements((string) $child->nodeValue) as $part) {
+                    if ($part instanceof Node) {
+                        $childNodes[] = $part;
+                    } elseif ('' !== $this->trimSpaces($part)) {
+                        $childNodes[] = new Text($this->trimSpaces($part));
+                    }
+                }
+
+                continue;
+            }
+
+            $childNode = $this->buildNodeFromDomElement(
+                element: $child,
+                allowLtrim: 0 === $key,
+                allowRtrim: $key === $element->childNodes->length - 1,
+                // a nested div without attributes is useless, so only keep its children
+                canConvertStyledDiv: !($child instanceof \DOMElement && 'div' === $child->tagName),
+            );
+
+            foreach (\is_array($childNode) ? $childNode : [$childNode] as $node) {
+                if (null !== $node) {
+                    $childNodes[] = $node;
+                }
+            }
+        }
+
+        $nodes = [new HtmlWrapperTag(\sprintf('<div%s>', $this->outputAttributes($attributes)))];
+        $paragraph = null;
+
+        foreach ($childNodes as $childNode) {
+            if ($childNode instanceof AbstractBlock) {
+                $paragraph = null;
+                $nodes[] = $childNode;
+            } else {
+                // group the successive inline nodes in a paragraph
+                if (null === $paragraph) {
+                    $paragraph = new Paragraph();
+                    $nodes[] = $paragraph;
+                }
+
+                $paragraph->appendChild($childNode);
+            }
+        }
+
+        $nodes[] = new HtmlWrapperTag('</div>');
+
+        return $nodes;
+    }
+
+    /**
+     * Splits a text around the placeholders of the markdown blocks found
+     * between the tags of the html block, which are replaced by these blocks.
+     *
+     * @return array<Node|string>
+     */
+    protected function splitReplacements(string $text): array
+    {
+        if ([] === $this->nodesReplacements) {
+            return [$text];
+        }
+
+        $pattern = \sprintf('/(%s)/', implode('|', array_map(
+            static fn (string $key): string => preg_quote($key, '/'),
+            array_keys($this->nodesReplacements),
+        )));
+        $parts = preg_split($pattern, $text, -1, \PREG_SPLIT_DELIM_CAPTURE) ?: [$text];
+
+        return array_map(fn (string $part): Node|string => $this->nodesReplacements[$part] ?? $part, $parts);
     }
 
     protected function appendChildElementsAsChildNodes(\DOMNode $element, Node $node, bool $canConvertStyledDiv = true): ?Node
@@ -617,7 +737,13 @@ class HtmlBlockFixer extends AbstractFixer implements FixerInterface
             $this->logger->info(\sprintf('<%s> tag is NOT closed', $matches[1]));
         }
 
-        $fixedNodes = $this->fixAndReplace($literal, $closingNodes);
+        $this->nodesReplacements = $nodesReplacements;
+
+        try {
+            $fixedNodes = $this->fixAndReplace($literal, $closingNodes);
+        } finally {
+            $this->nodesReplacements = [];
+        }
 
         if (null !== $fixedNodes) {
             $this->applyReplacementNodes($fixedNodes, $nodesReplacements);
