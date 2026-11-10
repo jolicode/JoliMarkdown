@@ -43,7 +43,7 @@ final class LinkRenderer implements NodeRendererInterface, ConfigurationAwareInt
             $attrs['href'] = $node->getUrl();
         }
 
-        if (($title = $node->getTitle()) !== null) {
+        if (($title = $this->getNativeTitle($node)) !== null) {
             $content = "[$alt]({$attrs['href']} \"{$title}\")";
         } else {
             $content = "[$alt]({$attrs['href']})";

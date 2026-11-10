@@ -48,7 +48,7 @@ final class ImageRenderer implements NodeRendererInterface, ConfigurationAwareIn
         $alt = preg_replace('/\<[^>]*alt="([^"]*)"[^>]*\>/', '$1', $alt);
         $attrs['alt'] = preg_replace('/\<[^>]*\>/', '', $alt ?? '');
 
-        if (($title = $node->getTitle()) !== null) {
+        if (($title = $this->getNativeTitle($node)) !== null) {
             $attrs['title'] = $title;
 
             return $this->addAttributes($node, "![{$attrs['alt']}]({$attrs['src']} \"{$title}\")");
