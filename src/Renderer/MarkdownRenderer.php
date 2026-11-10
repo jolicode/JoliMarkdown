@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace JoliMarkdown\Renderer;
 
 use JoliMarkdown\Node\Block\CommonmarkContainer;
+use JoliMarkdown\Node\Block\HtmlWrapperTag;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Event\DocumentPreRenderEvent;
 use League\CommonMark\Event\DocumentRenderedEvent;
@@ -64,8 +65,10 @@ final class MarkdownRenderer implements DocumentRendererInterface, ChildNodeRend
                     && $node instanceof AbstractBlock
                     && !(
                         ($node instanceof CommonmarkContainer)
+                        && !($node instanceof HtmlWrapperTag)
                         && $node->previous()
                         && ($node->previous() instanceof CommonmarkContainer)
+                        && !($node->previous() instanceof HtmlWrapperTag)
                     )) {
                     $output .= $this->getBlockSeparator();
                 }
