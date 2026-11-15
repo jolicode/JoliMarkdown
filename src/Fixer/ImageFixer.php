@@ -56,7 +56,7 @@ class ImageFixer extends AbstractFixer implements FixerInterface
                 return null;
             }
 
-            if (!str_starts_with($node->getUrl(), '/') && !str_starts_with($node->getUrl(), '://')) {
+            if ('' !== $node->getUrl() && !str_starts_with($node->getUrl(), '/') && !str_starts_with($node->getUrl(), '://')) {
                 $node->setUrl('/' . $node->getUrl());
             }
 
