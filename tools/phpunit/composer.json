@@ -1,6 +1,6 @@
 {
     "require": {
-        "phpunit/phpunit": "^12.4.5"
+        "phpunit/phpunit": "^12.5.44"
     },
     "config": {
         "bump-after-update": true,
