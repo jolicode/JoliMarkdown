@@ -14,6 +14,7 @@ namespace website;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use PhpWasm\Stack;
+use PhpWasm\Target;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Castor\context;
@@ -39,7 +40,7 @@ function build(
         ->php('8.5.12')
         ->extensions('ctype', 'dom', 'mbstring', 'xml')
         ->embed('website/build/app') // shows up as /app in the WASM filesystem
-        ->targets('web')
+        ->targets(Target::Web)
         ->outputDir('website/public/build');
 
     // What the WASM filesystem gets as /app
