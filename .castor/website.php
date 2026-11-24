@@ -14,6 +14,7 @@ namespace website;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use PhpWasm\Stack;
+use PhpWasm\Target;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Castor\context;
@@ -36,10 +37,10 @@ function build(
     $app = $root . '/website/build/app';
     // The PHP that runs the fixer in the browser, see https://github.com/lyrixx/php-wasm-builder
     $stack = Stack::named('jolimarkdown')
-        ->php('8.5.12')
+        ->php('8.6.0')
         ->extensions('ctype', 'dom', 'mbstring', 'xml')
         ->embed('website/build/app') // shows up as /app in the WASM filesystem
-        ->targets('web')
+        ->targets(Target::Web)
         ->outputDir('website/public/build');
 
     // What the WASM filesystem gets as /app
