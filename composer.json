@@ -19,7 +19,7 @@
         "php": ">=8.3",
         "ext-mbstring": "*",
         "lib-libxml": "*",
-        "league/commonmark": "^2.4",
+        "league/commonmark": "^2.10.2",
         "league/html-to-markdown": "^5.1",
         "psr/log": "^3.0"
     },
