@@ -2,6 +2,10 @@
 
 This bundle integrates [the JoliMarkdown library](https://github.com/jolicode/JoliMarkdown) into Symfony projects.
 
+## Requirements
+
+The bundle supports the maintained Symfony versions: 6.4, 7.4 and 8.1 or later. Older versions are not tested and may not work.
+
 ## Install
 
 Register the bundle `JoliMarkdown\Bridge\Symfony\JoliMarkdownBundle` in your kernel:

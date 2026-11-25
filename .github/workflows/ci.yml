@@ -10,14 +10,21 @@ name: Continuous Integration
 
 jobs:
     ci:
-        name: Run the tests suite
+        name: Run the tests suite (PHP ${{ matrix.php-versions }}, ${{ matrix.dependencies }} deps)
         runs-on: ubuntu-latest
         strategy:
+            fail-fast: false
             matrix:
                 php-versions:
                     - "8.3"
                     - "8.4"
                     - "8.5"
+                    - "8.6"
+                dependencies:
+                    - "highest"
+                include:
+                    - php-versions: "8.3"
+                      dependencies: "lowest"
         steps:
             - name: Checkout
               uses: actions/checkout@v5
@@ -36,10 +43,16 @@ jobs:
             - name: Install dependencies
               run: castor install
 
+            - name: Downgrade to the lowest supported dependencies
+              if: matrix.dependencies == 'lowest'
+              run: composer update -n --prefer-dist --prefer-lowest --prefer-stable
+
             - name: Install quality tools
               run: castor qa:install
 
+            # Annotations differ between dependency versions; analyse against the highest ones only
             - name: Run PHPStan
+              if: matrix.dependencies == 'highest'
               run: castor qa:phpstan
 
             - name: Run tests
