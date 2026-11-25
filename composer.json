@@ -24,7 +24,7 @@
         "psr/log": "^3.0"
     },
     "require-dev": {
-        "symfony/framework-bundle": "^6.0",
-        "symfony/validator": "^6.0"
+        "symfony/framework-bundle": "^6.4 || ^7.4 || ^8.1",
+        "symfony/validator": "^6.4 || ^7.4 || ^8.1"
     }
 }
