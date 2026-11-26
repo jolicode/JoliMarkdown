@@ -158,3 +158,8 @@ This repository proposes a tool to achieve this goal, using the following overal
 ## License
 
 This library is under MIT License. See the LICENSE file.
+
+<br><br>
+<div align="center">
+<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v4" alt="JoliCode is sponsoring this project"></a>
+</div>
